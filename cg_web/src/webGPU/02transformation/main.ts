@@ -2,7 +2,7 @@ import shader from './shader/shader.wgsl?raw';
 import { createCubic } from './object';
 import { IEnviroment } from '../interface';
 
-export default function render(scale, translation, rotation){
+export default function render({scaleX,scaleY, translationX,translationY,rotation}:{[key:string]:number}){
   return function({device, context,presentationFormat}:IEnviroment){
   const module = device.createShaderModule({
     label:'a basic shader',

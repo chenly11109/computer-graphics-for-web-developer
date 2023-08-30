@@ -9,10 +9,41 @@ export default function Transformation2DDemo() {
 
     const { webGPUId } = useParams();
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const {scale} = useControls({scale:10})
+    const {scaleX,scaleY, translationX,translationY, rotation} = useControls({
+        scaleX:{
+            min: 0,
+            max: 10,
+            value: 1,
+            step:0.1
+          },
+        scaleY:{
+            min: 0,
+            max: 10,
+            value: 1,
+            step:0.1
+          }, 
+        translationX:{
+            min: 0,
+            max: 200,
+            value: 0,
+            step:1
+          }, 
+        translationY:{
+            min: 0,
+            max: 200,
+            value: 0,
+            step:1
+          }, 
+        rotation:{
+            min: -360,
+            max: 360,
+            value: 0,
+            step:1
+          }, 
+    })
     const renderFn = useMemo(()=>{
-        return render(scale);
-    },[scale])
+        return render({scaleX,scaleY, translationX,translationY, rotation});
+    },[scaleX,scaleY, translationX,translationY, rotation])
     useEffect(() => {
         if (!canvasRef.current) return;
         defaultStart(canvasRef.current).then(
