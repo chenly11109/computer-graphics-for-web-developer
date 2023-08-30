@@ -1,5 +1,4 @@
 export async function defaultStart(canvas:HTMLCanvasElement){
-
     const context = canvas.getContext('webgpu');
        const adapter = await navigator.gpu?.requestAdapter();
        const device = await adapter?.requestDevice();
@@ -12,7 +11,5 @@ export async function defaultStart(canvas:HTMLCanvasElement){
        device,
        format: presentationFormat,
      });
-   
-   
      return {context, device, presentationFormat}
-   }
+}

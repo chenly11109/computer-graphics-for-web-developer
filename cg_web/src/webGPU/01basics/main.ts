@@ -2,7 +2,8 @@ import shader from './shader/shader.wgsl?raw';
 import { createPlan } from './object';
 import { IEnviroment } from '../interface';
 
-export default function transformation({device, context,presentationFormat}:IEnviroment){
+export default function render(){
+  return function({device, context,presentationFormat}:IEnviroment){
   const module = device.createShaderModule({
     label:'a basic shader',
     code:shader
@@ -68,4 +69,4 @@ export default function transformation({device, context,presentationFormat}:IEnv
     device?.queue.submit([commandBuffer]);
   }
 
-}
+}}
