@@ -8,9 +8,12 @@ struct VSOutput {
     @location(0) color:vec4f
 }
 
+@group(0) @binding(0) var<uniform> viewMatrix: mat4x4f;
+
 @vertex fn vs(vert: Vertex)->VSOutput{
     var vsOut: VSOutput;
-    vsOut.position = vert.position;
+    vsOut.position =viewMatrix * vert.position;
+  
     vsOut.color = vert.color;
 
     return vsOut;

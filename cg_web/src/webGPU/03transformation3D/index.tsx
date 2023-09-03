@@ -1,17 +1,23 @@
-import {  useEffect, useRef } from 'react';
+import {  useEffect, useRef, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { defaultStart } from '../utils/defaultStart';
 import render from './main';
 
 
-export default function Transformation2DDemo() {
+export default function Transformation3DDemo() {
 
     const { webGPUId } = useParams();
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
+    useEffect(()=>{
+
+    },[]);
+
+    const [transMatrix, setTransMatrix] = useState({});
+    const renderFn = useMemo(()=>{},[]);
     useEffect(() => {
         if (!canvasRef.current) return;
-        defaultStart(canvasRef.current).then(
+        defaultStart(canvasRef.curr\ent).then(
             (device) => {
 
                 if (!device) return;
