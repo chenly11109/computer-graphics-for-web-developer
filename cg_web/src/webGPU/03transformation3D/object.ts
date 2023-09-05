@@ -1,4 +1,4 @@
-import { getData } from "../utils/getData";
+import { getData3D } from "../utils/getData";
 
 export const createCubic = () => {
     const positions = [
@@ -50,7 +50,7 @@ export const createCubic = () => {
     ]
 
 
-    const { vertexData, numVertices } = getData(positions, indices, quadColors)
+    const { vertexData, numVertices } = getData3D(positions, indices, quadColors)
 
     return {
         cubicVertexData: vertexData,

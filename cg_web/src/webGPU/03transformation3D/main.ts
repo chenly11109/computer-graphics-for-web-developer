@@ -133,4 +133,4 @@ return function({device, context,presentationFormat, canvas}:IEnviroment){
     device?.queue.submit([commandBuffer]);
   }
 
-}};
+}}

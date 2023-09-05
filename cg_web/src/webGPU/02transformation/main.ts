@@ -84,9 +84,17 @@ export default function render({scaleX,scaleY, translationX,translationY,rotatio
     pass.setPipeline(pipeline);
     pass.setVertexBuffer(0, planVertexBuffer);
     const projectionMatrix = mat3.projection(canvas.clientWidth, canvas.clientHeight);
+   
+    const translationMatrix = mat3.translation([translationX, translationY]);
+    const scaleMatrix = mat3.scaling([scaleX, scaleY]);
+    const rotationMatrix = mat3.rotation(rotation);
 
-    const matrix = projectionMatrix;
-    uniformValues.set(matrix);
+    const matrixTemp =mat3.multiply(rotationMatrix,scaleMatrix);
+    const matrixTemp2 =mat3.multiply(translationMatrix,matrixTemp);
+    const matrix = mat3.multiply(projectionMatrix, matrixTemp2);
+
+    const matrix4 =[ ...matrix.slice(0,3),0,...matrix.slice(3,6),0,0,0,1,0,...matrix.slice(6,9),1];
+    uniformValues.set(matrix4);
     device.queue.writeBuffer(uniformBuffer, 0, uniformValues);
     pass.setBindGroup(0, bindGroup);
 

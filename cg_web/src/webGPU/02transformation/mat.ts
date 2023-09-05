@@ -1,13 +1,12 @@
 export const mat3 = {
     projection(width:number, height:number){
         return [
-            2/width, 0,0,0,
-            0,-2/height, 0,0,
-            0,0,0,0,
-            -1,1,0,1
+            2/width, 0,0,
+            0,-2/height, 0,
+            -1,1,1
         ]
     },
-    multiply(a:number[], b:number[]) {
+    multiply(a:number[],b:number[]) {
         const a00 = a[0 * 3 + 0];
         const a01 = a[0 * 3 + 1];
         const a02 = a[0 * 3 + 2];
@@ -54,7 +53,8 @@ export const mat3 = {
         ];
       },
 
-    rotation(angleInRadians:number){
+    rotation(deg:number){
+        const angleInRadians = deg/180 * Math.PI;
         const c = Math.cos(angleInRadians);
         const s = Math.sin(angleInRadians);
         return [

@@ -1,8 +1,10 @@
-import {  useMemo, useEffect, useRef } from 'react';
+import {   useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { defaultStart } from '../utils/defaultStart';
 import render from './main';
 import {useControls} from 'leva';
+import { IEnviroment } from '../interface';
+import throttle from 'lodash/throttle';
 
 
 export default function Transformation2DDemo() {
@@ -24,13 +26,13 @@ export default function Transformation2DDemo() {
           }, 
         translationX:{
             min: 0,
-            max: 200,
+            max:1000,
             value: 0,
             step:1
           }, 
         translationY:{
             min: 0,
-            max: 200,
+            max: 1000,
             value: 0,
             step:1
           }, 
@@ -41,9 +43,9 @@ export default function Transformation2DDemo() {
             step:1
           }, 
     })
-    const renderFn = useMemo(()=>{
-        return render({scaleX,scaleY, translationX,translationY, rotation});
-    },[scaleX,scaleY, translationX,translationY, rotation])
+    const renderFn = useCallback(((device: IEnviroment)=>{
+        return render({scaleX,scaleY, translationX,translationY, rotation})(device);
+    }),[scaleX,scaleY, translationX,translationY, rotation])
     useEffect(() => {
         if (!canvasRef.current) return;
         defaultStart(canvasRef.current).then(
@@ -66,6 +68,6 @@ export default function Transformation2DDemo() {
 
             }
         )
-    }, [webGPUId, canvasRef]);
+    }, [webGPUId, canvasRef, renderFn]);
     return <canvas ref={canvasRef} id="canvas" className="bg-black w-screen h-screen"></canvas>
 }

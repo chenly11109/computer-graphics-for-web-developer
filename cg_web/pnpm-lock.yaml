@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@types/lodash': ^4.14.197
   '@types/react': ^18.2.15
   '@types/react-dom': ^18.2.7
   '@typescript-eslint/eslint-plugin': ^6.0.0
@@ -12,6 +13,7 @@ specifiers:
   eslint-plugin-react-hooks: ^4.6.0
   eslint-plugin-react-refresh: ^0.4.3
   leva: ^0.9.35
+  lodash: ^4.17.21
   postcss: ^8.4.28
   react: ^18.2.0
   react-dom: ^18.2.0
@@ -24,12 +26,14 @@ specifiers:
 dependencies:
   '@webgpu/types': 0.1.34
   leva: 0.9.35_zkisbtryv3xtasf42ecsrjh3ky
+  lodash: 4.17.21
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-router-dom: 6.15.0_biqbaboplfbrettd7655fr4n2y
   stats.js: 0.17.0
 
 devDependencies:
+  '@types/lodash': 4.14.197
   '@types/react': 18.2.21
   '@types/react-dom': 18.2.7
   '@typescript-eslint/eslint-plugin': 6.5.0_nvwva6txm3qs6xnog6dqanz5uy
@@ -885,6 +889,10 @@ packages:
 
   /@types/json-schema/7.0.12:
     resolution: {integrity: sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==}
+    dev: true
+
+  /@types/lodash/4.14.197:
+    resolution: {integrity: sha512-BMVOiWs0uNxHVlHBgzTIqJYmj+PgCo4euloGF+5m4okL3rEYzM2EEv78mw8zWSMM57dM7kVIgJ2QDvwHSoCI5g==}
     dev: true
 
   /@types/prop-types/15.7.5:
@@ -1827,6 +1835,10 @@ packages:
   /lodash.merge/4.6.2:
     resolution: {integrity: sha1-VYqlO0O2YeGSWgr9+japoQhf5Xo=}
     dev: true
+
+  /lodash/4.17.21:
+    resolution: {integrity: sha1-Z5WRxWTDv/quhFTPCz3zcMPWkRw=}
+    dev: false
 
   /loose-envify/1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}

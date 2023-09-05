@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 export default function Transformation2D(){
     return <section>
         <h1 className="text-3xl">Transformation</h1>
-        <Link className="font-bold underline" to="/webgpu/02transformation2D">Demo</Link>
+        <Link className="font-bold underline text-xl block mt-2" to="/webgpu/02transformation2D">Demo</Link>
         <div className="mt-5">
         <h2 className="text-2xl">vector, matrix & algebra</h2>
         
