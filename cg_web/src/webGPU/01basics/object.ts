@@ -1,10 +1,10 @@
-import { getData } from "../utils/getData";
+import { getData2D } from "../utils/getData";
 export const createPlan = () => {
     const positions = [
-        -0.8, -0.8, 0,
-        -0.8, 0.8, 0,
-        0.8, -0.8, 0,
-        0.8, 0.8, 0,
+        -0.8, -0.8, 
+        -0.8, 0.8, 
+        0.8, -0.8, 
+        0.8, 0.8, 
     ];
 
     const indices = [
@@ -14,12 +14,10 @@ export const createPlan = () => {
 
     const quadColors = [
         200, 70, 120,
-        200, 70, 120,
-        200, 70, 120,
     ]
 
 
-    const { vertexData, numVertices } = getData(positions, indices, quadColors)
+    const { vertexData, numVertices } = getData2D(positions, indices, quadColors)
 
     return {
         planVertexData: vertexData,

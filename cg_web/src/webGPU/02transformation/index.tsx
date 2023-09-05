@@ -49,11 +49,11 @@ export default function Transformation2DDemo() {
         defaultStart(canvasRef.current).then(
             (device) => {
                 if (!device) return;
-             
                 //为了在刚开始渲染的时候，清晰度就足够
                 const observer = new ResizeObserver(entries => {
                     for (const entry of entries) {
                         const canvas = entry.target as HTMLCanvasElement;
+                        if(!canvas || !device)return;
                         const width = entry.contentBoxSize[0].inlineSize;
                         const height = entry.contentBoxSize[0].blockSize;
                         canvas.width = Math.max(1, Math.min(width, device.device.limits.maxTextureDimension2D));

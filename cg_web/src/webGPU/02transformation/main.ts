@@ -1,9 +1,10 @@
 import shader from './shader/shader.wgsl?raw';
-import { createCubic } from './object';
+import { createSquare } from './object';
 import { IEnviroment } from '../interface';
+import { mat3 } from './mat';
 
 export default function render({scaleX,scaleY, translationX,translationY,rotation}:{[key:string]:number}){
-  return function({device, context,presentationFormat}:IEnviroment){
+  return function({device, context,presentationFormat, canvas}:IEnviroment){
   const module = device.createShaderModule({
     label:'a basic shader',
     code:shader
@@ -18,10 +19,10 @@ export default function render({scaleX,scaleY, translationX,translationY,rotatio
         entryPoint: 'vs',
         buffers: [
           {
-            arrayStride: (4) * 4, // (3) floats 4 bytes each + one 4 byte color
+            arrayStride: (3) * 4, // (2) floats 4 bytes each + one 4 byte color
             attributes: [
-              {shaderLocation: 0, offset: 0, format: 'float32x3'},  // position
-              {shaderLocation: 1, offset: 12, format: 'unorm8x4'},  // color
+              {shaderLocation: 0, offset: 0, format: 'float32x2'},  // position
+              {shaderLocation: 1, offset: 8, format: 'unorm8x4'},  // color
             ],
           },
         ],
@@ -31,21 +32,36 @@ export default function render({scaleX,scaleY, translationX,translationY,rotatio
         entryPoint: 'fs',
         targets: [{ format: presentationFormat }],
       },
-    //KEY:
-    primitive:{
-      cullMode:'back'
-    },
     
   });
 
+  const uniformBufferSize = (12 + 4) * 4; //matrix + padding
+  const uniformBuffer = device.createBuffer({
+    label:'uniforms',
+    size:uniformBufferSize,
+    usage:GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+  })
+
+  //把matrix设置在uniform value 里面
+  const uniformValues = new Float32Array(uniformBufferSize / 4);
+  const bindGroup = device.createBindGroup({
+    label:'bind group for transformation',
+    layout:pipeline.getBindGroupLayout(0),
+    entries:[
+      {binding:0, resource:{buffer:uniformBuffer}}
+    ]
+  })
+  //这里因为projection的取值和canvas的长宽有关系，因此要放在render里实时更新
+
+
   //初始化data(vertex, color, etc.)
-  const {cubicVertexData, cubicNumVertices} = createCubic();
+  const {squareVertexData, squareNumVertices} = createSquare();
   const planVertexBuffer = device.createBuffer({
     label:'plan buffer vertices',
-    size:cubicVertexData.byteLength,
+    size:squareVertexData.byteLength,
     usage:GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
   });
-  device.queue.writeBuffer(planVertexBuffer, 0, cubicVertexData);
+  device.queue.writeBuffer(planVertexBuffer, 0, squareVertexData);
 
   // 设定一条渲染的线程
   const renderPassDescriptor = {
@@ -67,7 +83,14 @@ export default function render({scaleX,scaleY, translationX,translationY,rotatio
     if(!pass || !encoder){return}
     pass.setPipeline(pipeline);
     pass.setVertexBuffer(0, planVertexBuffer);
-    pass.draw(cubicNumVertices);
+    const projectionMatrix = mat3.projection(canvas.clientWidth, canvas.clientHeight);
+
+    const matrix = projectionMatrix;
+    uniformValues.set(matrix);
+    device.queue.writeBuffer(uniformBuffer, 0, uniformValues);
+    pass.setBindGroup(0, bindGroup);
+
+    pass.draw(squareNumVertices);
     pass.end();
 
     const commandBuffer = encoder.finish();

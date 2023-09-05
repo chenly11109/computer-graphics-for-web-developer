@@ -2,8 +2,8 @@ import shader from './shader/shader.wgsl?raw';
 import { createPlan } from './object';
 import { IEnviroment } from '../interface';
 
-export default function render(){
-  return function({device, context,presentationFormat}:IEnviroment){
+export default function render({device, context,presentationFormat}:IEnviroment){
+
   const module = device.createShaderModule({
     label:'a basic shader',
     code:shader
@@ -18,10 +18,10 @@ export default function render(){
         entryPoint: 'vs',
         buffers: [
           {
-            arrayStride: (4) * 4, // (3) floats 4 bytes each + one 4 byte color
+            arrayStride: (3) * 4, // (2) floats 4 bytes each + one 4 byte color
             attributes: [
-              {shaderLocation: 0, offset: 0, format: 'float32x3'},  // position
-              {shaderLocation: 1, offset: 12, format: 'unorm8x4'},  // color
+              {shaderLocation: 0, offset: 0, format: 'float32x2'},  // position
+              {shaderLocation: 1, offset: 8, format: 'unorm8x4'},  // color
             ],
           },
         ],
@@ -69,4 +69,4 @@ export default function render(){
     device?.queue.submit([commandBuffer]);
   }
 
-}}
+}

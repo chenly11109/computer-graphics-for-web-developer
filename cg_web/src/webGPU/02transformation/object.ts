@@ -1,21 +1,20 @@
-import { getData } from "../utils/getData";
+import { getData2D } from "../utils/getData";
 
-export const createCubic = () => {
+export const createSquare = () => {
     const positions = [
         //0
-        -0.3, 0.3, 0,
+        0,0,
         //1
-        0.3, 0.3, 0,
+        100,0, 
         //2
-        0.3, -0.3, 0,
+        100, 100, 
         //3
-        -0.3, -0.3, 0,
+        0, 100, 
     ];
 
     const indices = [
-        //front
         0, 3, 1,
-        1, 3, 2,
+        1, 2, 3,
     ];
 
     const quadColors = [
@@ -23,10 +22,10 @@ export const createCubic = () => {
     ]
 
 
-    const { vertexData, numVertices } = getData(positions, indices, quadColors)
+    const { vertexData, numVertices } = getData2D(positions, indices, quadColors)
 
     return {
-        cubicVertexData: vertexData,
-        cubicNumVertices: numVertices
+        squareVertexData: vertexData,
+        squareNumVertices: numVertices
     }
 }

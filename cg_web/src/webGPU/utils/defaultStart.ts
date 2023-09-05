@@ -11,5 +11,5 @@ export async function defaultStart(canvas:HTMLCanvasElement){
        device,
        format: presentationFormat,
      });
-     return {context, device, presentationFormat}
+     return {context, device, presentationFormat, canvas}
 }
