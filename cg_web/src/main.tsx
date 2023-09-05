@@ -6,6 +6,7 @@ import Basics from './components/Basics/index.tsx';
 import Transformation2D from './components/Transformation/index.tsx';
 import Transformation2DDemo from './webGPU/02transformation/index.tsx';
 import BasicsDemo from './webGPU/01basics/index.tsx';
+import Transformation3DDemo from './webGPU/03transformation3D/index.tsx';
 import {
   createBrowserRouter,
   RouterProvider,
@@ -41,7 +42,13 @@ const router = createBrowserRouter([
 
     {path:'02transformation2D',
     element:<Transformation2DDemo />
-  }
+  },
+
+  
+  {path:'03transformation3D',
+  element:<Transformation3DDemo />
+},
+  
    ]
 }
 ]);
