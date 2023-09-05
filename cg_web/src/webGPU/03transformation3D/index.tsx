@@ -1,8 +1,9 @@
-import {  useEffect, useRef, useMemo } from 'react';
+import {  useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { defaultStart } from '../utils/defaultStart';
 import render from './main';
 import { useControls } from 'leva';
+import { IEnviroment } from '../interface';
 
 
 export default function Transformation3DDemo() {
@@ -14,41 +15,65 @@ export default function Transformation3DDemo() {
 
     },[]);
 
-    const {scaleX,scaleY, translationX,translationY, rotation} = useControls({
-        scaleX:{
-            min: 0,
+    const {sx,sy,sz, tx,ty,tz, rx, ry, rz} = useControls({
+        sx:{
+            min: -10,
             max: 10,
             value: 1,
             step:0.1
           },
-        scaleY:{
-            min: 0,
+        sy:{
+            min: -10,
             max: 10,
             value: 1,
             step:0.1
           }, 
-        translationX:{
-            min: 0,
+        sz:{
+            min: -10,
+            max: 10,
+            value: 1,
+            step:0.1
+          }, 
+        tx:{
+            min: -200,
             max: 200,
             value: 0,
             step:1
           }, 
-        translationY:{
-            min: 0,
+        ty:{
+            min: -200,
             max: 200,
             value: 0,
             step:1
           }, 
-        rotation:{
+          tz:{
+            min: -200,
+            max: 200,
+            value: 0,
+            step:1
+          }, 
+        rx:{
+            min: -360,
+            max: 360,
+            value: 0,
+            step:1
+          }, 
+          ry:{
+            min: -360,
+            max: 360,
+            value: 0,
+            step:1
+          }, 
+          rz:{
             min: -360,
             max: 360,
             value: 0,
             step:1
           }, 
     })
-    const renderFn = useMemo(()=>{
-        return render({ translationX,translationY});
-    },[translationX,translationY])
+    const renderFn = useCallback(((device: IEnviroment)=>{
+        return render({sx,sy,sz, tx,ty,tz, rx, ry, rz})(device);
+    }),[sx,sy,sz, tx,ty,tz, rx, ry, rz])
     useEffect(() => {
         if (!canvasRef.current) return;
         defaultStart(canvasRef.current).then(

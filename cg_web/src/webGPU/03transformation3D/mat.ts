@@ -1,6 +1,6 @@
-export const mat3 = {
-  ortho(left:number, right:number, bottom:number, top:number, near:number, far:number) {
-    const dst = new Float32Array(16);
+export const mat4 = {
+  ortho(left:number, right:number, bottom:number, top:number, near:number, far:number, dst?: Float32Array) {
+    dst = dst || new Float32Array(16);
 
     dst[0] = 2 / (right - left);
     dst[1] = 0;
@@ -24,7 +24,8 @@ export const mat3 = {
 
     return dst;
   },
-    multiply(a:number[], b:number[]) {
+    multiply(a:Float32Array, b:Float32Array, dst:Float32Array) {
+    dst = dst || new Float32Array(16);
     const b00 = b[0 * 4 + 0];
     const b01 = b[0 * 4 + 1];
     const b02 = b[0 * 4 + 2];
@@ -58,8 +59,6 @@ export const mat3 = {
     const a32 = a[3 * 4 + 2];
     const a33 = a[3 * 4 + 3];
 
-    let dst=[];
-
     dst[0] = b00 * a00 + b01 * a10 + b02 * a20 + b03 * a30;
     dst[1] = b00 * a01 + b01 * a11 + b02 * a21 + b03 * a31;
     dst[2] = b00 * a02 + b01 * a12 + b02 * a22 + b03 * a32;
@@ -81,32 +80,41 @@ export const mat3 = {
     dst[15] = b30 * a03 + b31 * a13 + b32 * a23 + b33 * a33;
 
     return dst;},
-    scaling([sx, sy, sz]:number[]){
-        return[
-            sx,0,0,0,
-            0,sy,0,0,
-            0,0,sz,0,
-            0,0,0,1
-        ]
+    scaling([sx, sy, sz]:number[], dst?:Float32Array){
+      dst = dst || new Float32Array(16);
+      dst.set([
+        sx,0,0,0,
+        0,sy,0,0,
+        0,0,sz,0,
+        0,0,0,1
+    ])
+       return dst
     },
 
-    translation([tx, ty, tz]:number[]) {
-        return [
+    translation([tx, ty, tz]:number[], dst?:Float32Array) {
+      dst = dst || new Float32Array(16);
+       dst.set([
           1, 0, 0,0,
           0, 1, 0,0,
           0,0,1,0,
           tx, ty, tz,1,
-        ];
+        ]);
+        return dst
       },
 
-    rotation(angleInRadians:number){
+    rotationX(deg:number, dst?:Float32Array){
+      dst = dst || new Float32Array(16);
+      const angleInRadians = deg/180 * Math.PI;
         const c = Math.cos(angleInRadians);
         const s = Math.sin(angleInRadians);
-        return [
-          c, s, 0,
-          -s, c, 0,
-          0, 0, 1,
-        ];
+        dst.set([
+          1, 0, 0,  0,
+          0, c, s,  0,
+          0, -s, c, 0,
+          0, 0, 0,  1,
+        ]);
+
+        return dst;
     }
 
 

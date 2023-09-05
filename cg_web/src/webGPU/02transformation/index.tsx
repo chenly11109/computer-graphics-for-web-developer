@@ -4,7 +4,6 @@ import { defaultStart } from '../utils/defaultStart';
 import render from './main';
 import {useControls} from 'leva';
 import { IEnviroment } from '../interface';
-import throttle from 'lodash/throttle';
 
 
 export default function Transformation2DDemo() {
