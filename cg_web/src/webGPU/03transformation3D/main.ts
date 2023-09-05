@@ -30,10 +30,21 @@ return function({device, context,presentationFormat, canvas}:IEnviroment){
       fragment: {
         module,
         entryPoint: 'fs',
-        targets: [{ format: presentationFormat }],
+        targets: [{ format: presentationFormat,
+          blend: {
+            color: {
+              srcFactor: 'one',
+              //黑底图减去颜色
+              operation: 'subtract',
+              dstFactor: 'one-minus-src-alpha',
+            },
+            alpha: {},
+          },
+        }],
+        
       },
     primitive:{
-      cullMode:'back'
+      cullMode:'none'
     },
     depthStencil:{
       depthWriteEnabled:true,
@@ -66,6 +77,7 @@ return function({device, context,presentationFormat, canvas}:IEnviroment){
       { binding: 0, resource: { buffer: uniformBuffer }},
     ],
   });
+  const clearColor = { r: 0, g: 0, b: 0, a: 1.0 };
 
   // 设定一条渲染的线程
   const renderPassDescriptor = {
@@ -74,7 +86,9 @@ return function({device, context,presentationFormat, canvas}:IEnviroment){
         {
             loadOp:'clear',
             storeOp:'store',
-            view:undefined as unknown as GPUTextureView
+            clearValue:clearColor,
+            view:undefined as unknown as GPUTextureView,
+            
         }
     ],
 
@@ -83,7 +97,8 @@ return function({device, context,presentationFormat, canvas}:IEnviroment){
       depthLoadOp:'clear',
       depthStoreOp:'store',
       view:undefined as unknown as GPUTextureView
-    }
+    },
+    
   };
 
   let depthTexture:GPUTexture;
@@ -126,11 +141,19 @@ return function({device, context,presentationFormat, canvas}:IEnviroment){
      const scaleMatrix = mat4.scaling([sx, sy, sz]);
      const translationMatrix = mat4.translation([tx,ty,tz]);
      const rotationXMatrix = mat4.rotationX(rx);
+     const rotationYMatrix = mat4.rotationY(ry);
+     const rotationZMatrix = mat4.rotationZ(rz);
 
      const matrix = new Float32Array(16);
-     mat4.multiply(projectionMatrix, rotationXMatrix, matrix);
-    //  mat4.multiply(translationMatrix,matrix, matrix);
-    //  mat4.multiply(projectionMatrix, matrix,matrix);
+
+     mat4.multiply(rotationXMatrix, scaleMatrix, matrix);
+     mat4.multiply(rotationYMatrix, matrix, matrix);
+     mat4.multiply(rotationZMatrix, matrix, matrix);
+
+    
+     mat4.multiply(translationMatrix, matrix, matrix);
+
+     mat4.multiply(projectionMatrix, matrix, matrix);
 
      uniformValues.set(matrix);
      device.queue.writeBuffer(uniformBuffer, 0, uniformValues);

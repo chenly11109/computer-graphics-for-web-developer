@@ -14,6 +14,6 @@ export default function Transformation2D(){
         <br className="mt-5"/>
         <h1 className="text-2xl">WebGPU</h1>
         <h2>depth</h2>
-       
+        <h2>alpha and blend mode</h2>
     </section>
 }

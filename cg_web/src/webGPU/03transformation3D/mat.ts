@@ -115,6 +115,34 @@ export const mat4 = {
         ]);
 
         return dst;
+    },
+    rotationY(deg:number, dst?:Float32Array){
+      dst = dst || new Float32Array(16);
+      const angleInRadians = deg/180 * Math.PI;
+        const c = Math.cos(angleInRadians);
+        const s = Math.sin(angleInRadians);
+        dst.set([
+          c, 0, s,  0,
+          0, 1, 0,  0,
+          -s, 0, c, 0,
+          0, 0, 0,  1,
+        ]);
+
+        return dst;
+    },
+    rotationZ(deg:number, dst?:Float32Array){
+      dst = dst || new Float32Array(16);
+      const angleInRadians = deg/180 * Math.PI;
+        const c = Math.cos(angleInRadians);
+        const s = Math.sin(angleInRadians);
+        dst.set([
+          c, s, 0,  0,
+          -s, c, 0,  0,
+          0, 0, 1, 0,
+          0, 0, 0,  1,
+        ]);
+
+        return dst;
     }
 
 

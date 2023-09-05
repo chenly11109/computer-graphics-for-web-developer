@@ -33,7 +33,7 @@ export const getData3D = (positions:number[],indices:number[],  quadColors:numbe
       const quadNdx = (i / 6 | 0) * 3;
       const color = quadColors.slice(quadNdx, quadNdx + 3);
       colorData.set(color, i * 16 + 12);
-      colorData[i * 16 + 15] = 255;
+      colorData[i * 16 + 15] = 200;
     }
 
     return {
