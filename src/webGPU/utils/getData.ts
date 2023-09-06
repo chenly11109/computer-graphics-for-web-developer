@@ -11,7 +11,7 @@ export const getData2D = (positions:number[],indices:number[],  quadColors:numbe
         const quadNdx = (i / 6 | 0) * 3;
         const color = quadColors.slice(quadNdx, quadNdx + 3);
         colorData.set(color, i * 12 + 8);
-        colorData[i * 16 + 15] = 255;
+        colorData[i * 12 + 11] = 255;
       }
 
       return {

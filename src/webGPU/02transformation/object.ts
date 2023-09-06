@@ -19,6 +19,7 @@ export const createSquare = () => {
 
     const quadColors = [
         200, 70, 120,
+        
     ]
 
 

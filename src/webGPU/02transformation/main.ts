@@ -56,18 +56,20 @@ export default function render({scaleX,scaleY, translationX,translationY,rotatio
 
   //初始化data(vertex, color, etc.)
   const {squareVertexData, squareNumVertices} = createSquare();
-  const planVertexBuffer = device.createBuffer({
+  const squareVertexBuffer = device.createBuffer({
     label:'plan buffer vertices',
     size:squareVertexData.byteLength,
     usage:GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
   });
-  device.queue.writeBuffer(planVertexBuffer, 0, squareVertexData);
+  
+  device.queue.writeBuffer(squareVertexBuffer, 0, squareVertexData);
 
   // 设定一条渲染的线程
   const renderPassDescriptor = {
     label:'render pass',
     colorAttachments:[
         {
+          clearValue:[0,0,0,1],
             loadOp:'clear',
             storeOp:'store',
             view:undefined as unknown as GPUTextureView
@@ -82,7 +84,8 @@ export default function render({scaleX,scaleY, translationX,translationY,rotatio
     const pass = encoder?.beginRenderPass(renderPassDescriptor as GPURenderPassDescriptor);
     if(!pass || !encoder){return}
     pass.setPipeline(pipeline);
-    pass.setVertexBuffer(0, planVertexBuffer);
+    pass.setVertexBuffer(0, squareVertexBuffer);
+
     const projectionMatrix = mat3.projection(canvas.clientWidth, canvas.clientHeight);
    
     const translationMatrix = mat3.translation([translationX, translationY]);

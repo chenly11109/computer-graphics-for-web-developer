@@ -33,9 +33,9 @@ return function({device, context,presentationFormat, canvas}:IEnviroment){
         targets: [{ format: presentationFormat,
           blend: {
             color: {
-              srcFactor: 'one',
+              srcFactor:'src',
               //黑底图减去颜色
-              operation: 'subtract',
+              operation: 'add',
               dstFactor: 'one-minus-src-alpha',
             },
             alpha: {},
