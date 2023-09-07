@@ -1,13 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
-import Notes from './components/Notes/index.tsx';
-import Basics from './components/Basics/index.tsx';
-import Transformation2D from './components/Transformation/index.tsx';
-import Transformation2DDemo from './webGPU/02transformation/index.tsx';
-import BasicsDemo from './webGPU/01basics/index.tsx';
-import Transformation3D from "./components/Transformation3D/index.tsx"
-import Transformation3DDemo from './webGPU/03transformation3D/index.tsx';
+import Notes from './components/Notes';
+import Basics from './components/01Basics';
+import Transformation2D from './components/02Transformation';
+import Transformation2DDemo from './webGPU/02transformation';
+import BasicsDemo from './webGPU/01basics';
+import Transformation3D from "./components/03Transformation3D"
+import Transformation3DDemo from './webGPU/03transformation3D';
+import Perspective from './components/04Perspective';
+import PerspectiveDemo from './webGPU/04Perspective'
 import {
   createBrowserRouter,
   RouterProvider,
@@ -36,6 +38,10 @@ const router = createBrowserRouter([
       path:'03transformation3D',
       element:<Transformation3D/>
     },
+    {
+      path:'04Perspective',
+      element:<Perspective/>
+    },
   ]
   },
   {path:"webGPU/",
@@ -52,6 +58,9 @@ const router = createBrowserRouter([
   
   {path:'03transformation3D',
   element:<Transformation3DDemo />
+},
+{path:'04perspective',
+  element:<PerspectiveDemo />
 },
   
    ]
