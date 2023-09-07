@@ -1,30 +1,61 @@
+const getRadians = (deg: number) => {
+  return (deg / 180) * Math.PI;
+};
+
 export const mat4 = {
-  ortho(left:number, right:number, bottom:number, top:number, near:number, far:number, dst?: Float32Array) {
+  perspective(
+    fovy: number,
+    aspect: number,
+    zNear: number,
+    zFar: number,
+    dst?: Float32Array
+  ) {
     dst = dst || new Float32Array(16);
 
-    dst[0] = 2 / (right - left);
+    const fInRadians = getRadians(90 - fovy / 2);
+    const f = Math.tan(fInRadians);
+    const rangeInv = 1 / (zNear - zFar);
+
+    dst[0] = f / aspect;
     dst[1] = 0;
     dst[2] = 0;
     dst[3] = 0;
 
     dst[4] = 0;
-    dst[5] = 2 / (top - bottom);
+    dst[5] = f;
     dst[6] = 0;
     dst[7] = 0;
 
     dst[8] = 0;
     dst[9] = 0;
-    dst[10] = 1 / (near - far);
-    dst[11] = 0;
+    dst[10] = zFar * rangeInv;
+    dst[11] = -1;
 
-    dst[12] = (right + left) / (left - right);
-    dst[13] = (top + bottom) / (bottom - top);
-    dst[14] = near / (near - far);
-    dst[15] = 1;
+    dst[12] = 0;
+    dst[13] = 0;
+    dst[14] = 2 * zNear * zFar * rangeInv;
+    dst[15] = 0;
 
     return dst;
   },
-    multiply(a:Float32Array, b:Float32Array, dst:Float32Array) {
+
+  frustum(
+    left: number,
+    right: number,
+    bottom: number,
+    top: number,
+    nearVal: number,
+    farValdst:number,
+    dst:Float32Array
+  ) {
+    dst = dst || new Float32Array(16);
+
+
+
+    return dst;
+  },
+
+  multiply(a: Float32Array, b: Float32Array, dst: Float32Array) {
     dst = dst || new Float32Array(16);
     const b00 = b[0 * 4 + 0];
     const b01 = b[0 * 4 + 1];
@@ -79,71 +110,45 @@ export const mat4 = {
     dst[14] = b30 * a02 + b31 * a12 + b32 * a22 + b33 * a32;
     dst[15] = b30 * a03 + b31 * a13 + b32 * a23 + b33 * a33;
 
-    return dst;},
-    scaling([sx, sy, sz]:number[], dst?:Float32Array){
-      dst = dst || new Float32Array(16);
-      dst.set([
-        sx,0,0,0,
-        0,sy,0,0,
-        0,0,sz,0,
-        0,0,0,1
-    ])
-       return dst
-    },
+    return dst;
+  },
+  scaling([sx, sy, sz]: number[], dst?: Float32Array) {
+    dst = dst || new Float32Array(16);
+    dst.set([sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, sz, 0, 0, 0, 0, 1]);
+    return dst;
+  },
 
-    translation([tx, ty, tz]:number[], dst?:Float32Array) {
-      dst = dst || new Float32Array(16);
-       dst.set([
-          1, 0, 0,0,
-          0, 1, 0,0,
-          0,0,1,0,
-          tx, ty, tz,1,
-        ]);
-        return dst
-      },
+  translation([tx, ty, tz]: number[], dst?: Float32Array) {
+    dst = dst || new Float32Array(16);
+    dst.set([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1]);
+    return dst;
+  },
 
-    rotationX(deg:number, dst?:Float32Array){
-      dst = dst || new Float32Array(16);
-      const angleInRadians = deg/180 * Math.PI;
-        const c = Math.cos(angleInRadians);
-        const s = Math.sin(angleInRadians);
-        dst.set([
-          1, 0, 0,  0,
-          0, c, s,  0,
-          0, -s, c, 0,
-          0, 0, 0,  1,
-        ]);
+  rotationX(deg: number, dst?: Float32Array) {
+    dst = dst || new Float32Array(16);
+    const angleInRadians = (deg / 180) * Math.PI;
+    const c = Math.cos(angleInRadians);
+    const s = Math.sin(angleInRadians);
+    dst.set([1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1]);
 
-        return dst;
-    },
-    rotationY(deg:number, dst?:Float32Array){
-      dst = dst || new Float32Array(16);
-      const angleInRadians = deg/180 * Math.PI;
-        const c = Math.cos(angleInRadians);
-        const s = Math.sin(angleInRadians);
-        dst.set([
-          c, 0, s,  0,
-          0, 1, 0,  0,
-          -s, 0, c, 0,
-          0, 0, 0,  1,
-        ]);
+    return dst;
+  },
+  rotationY(deg: number, dst?: Float32Array) {
+    dst = dst || new Float32Array(16);
+    const angleInRadians = (deg / 180) * Math.PI;
+    const c = Math.cos(angleInRadians);
+    const s = Math.sin(angleInRadians);
+    dst.set([c, 0, s, 0, 0, 1, 0, 0, -s, 0, c, 0, 0, 0, 0, 1]);
 
-        return dst;
-    },
-    rotationZ(deg:number, dst?:Float32Array){
-      dst = dst || new Float32Array(16);
-      const angleInRadians = deg/180 * Math.PI;
-        const c = Math.cos(angleInRadians);
-        const s = Math.sin(angleInRadians);
-        dst.set([
-          c, s, 0,  0,
-          -s, c, 0,  0,
-          0, 0, 1, 0,
-          0, 0, 0,  1,
-        ]);
+    return dst;
+  },
+  rotationZ(deg: number, dst?: Float32Array) {
+    dst = dst || new Float32Array(16);
+    const angleInRadians = (deg / 180) * Math.PI;
+    const c = Math.cos(angleInRadians);
+    const s = Math.sin(angleInRadians);
+    dst.set([c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
 
-        return dst;
-    }
-
-
-}
+    return dst;
+  },
+};

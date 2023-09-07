@@ -1,73 +1,84 @@
-import { useEffect,useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { defaultStart } from "../utils/defaultStart";
 import render from "./main";
-import { useControls } from "leva";
+import { useControls, folder } from "leva";
 import { IEnviroment } from "../interface";
 
 export default function Transformation3DDemo() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { sx, sy, sz, tx, ty, tz, rx, ry, rz } = useControls({
-    sx: {
-      min: -10,
-      max: 10,
-      value: 1,
-      step: 0.1,
-    },
-    sy: {
-      min: -10,
-      max: 10,
-      value: 1,
-      step: 0.1,
-    },
-    sz: {
-      min: -10,
-      max: 10,
-      value: 1,
-      step: 0.1,
-    },
-    tx: {
-      min: -200,
-      max: 200,
-      value: 0,
-      step: 1,
-    },
-    ty: {
-      min: -200,
-      max: 200,
-      value: 0,
-      step: 1,
-    },
-    tz: {
-      min: -200,
-      max: 200,
-      value: 0,
-      step: 1,
-    },
-    rx: {
-      min: -360,
-      max: 360,
-      value: 0,
-      step: 1,
-    },
-    ry: {
-      min: -360,
-      max: 360,
-      value: 0,
-      step: 1,
-    },
-    rz: {
-      min: -360,
-      max: 360,
-      value: 0,
-      step: 1,
-    },
+  const { sx, tx, ty, tz, rx, ry, rz, fov, zNear, zFar } = useControls({
+    perspective: folder({
+      fov: {
+        min: 35,
+        max: 200,
+        value: 45,
+        step: 1,
+      },
+      zNear: {
+        min: 20,
+        max: 250,
+        value: 50,
+        step: 10,
+      },
+      zFar: {
+        min: 300,
+        max: 5000,
+        value: 1000,
+        step: 10,
+      },
+    }),
+    object: folder({
+      sx: {
+        min: -10,
+        max: 10,
+        value: 1,
+        step: 0.1,
+      },
+
+      tx: {
+        min: -200,
+        max: 200,
+        value: 0,
+        step: 1,
+      },
+      ty: {
+        min: -200,
+        max: 200,
+        value: 0,
+        step: 1,
+      },
+      tz: {
+        min: -2000,
+        max: -100,
+        value: -300,
+        step: 1,
+      },
+      rx: {
+        min: -360,
+        max: 360,
+        value: 0,
+        step: 1,
+      },
+      ry: {
+        min: -360,
+        max: 360,
+        value: 0,
+        step: 1,
+      },
+      rz: {
+        min: -360,
+        max: 360,
+        value: 0,
+        step: 1,
+      },
+    }),
   });
 
   const renderFn = useCallback(
     (device: IEnviroment) => {
-      return render({ sx, sy, sz, tx, ty, tz, rx, ry, rz })(device);
+      return render({ sx, tx, ty, tz, rx, ry, rz, fov, zNear, zFar })(device);
     },
-    [sx, sy, sz, tx, ty, tz, rx, ry, rz]
+    [sx, tx, ty, tz, rx, ry, rz, zNear, fov, zFar]
   );
 
   const [device, setDevice] = useState<IEnviroment>();
@@ -79,11 +90,12 @@ export default function Transformation3DDemo() {
     });
   }, [canvasRef]);
 
-
   const observerRef = useRef<ResizeObserver>();
   useEffect(() => {
     if (!device || !canvasRef.current) return;
-    if(observerRef.current){observerRef.current.disconnect()}
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
     //为了在刚开始渲染的时候，清晰度就足够
     observerRef.current = new ResizeObserver((entries) => {
       if (!device) return;
@@ -106,11 +118,10 @@ export default function Transformation3DDemo() {
     observerRef.current.observe(canvasRef.current);
   }, [device, renderFn]);
 
-  useEffect(()=>{
-
-    if(!device)return
+  useEffect(() => {
+    if (!device) return;
     renderFn(device)();
-  },[renderFn, device])
+  }, [renderFn, device]);
   return (
     <canvas
       ref={canvasRef}

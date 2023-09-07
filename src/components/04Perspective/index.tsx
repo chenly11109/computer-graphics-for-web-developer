@@ -5,6 +5,7 @@ export default function Transformation2D(){
         <Link className="font-bold underline" to="/webgpu/04perspective">Demo</Link>
 
         <h1 className="text-2xl">frustum perspective</h1>
+        <a>https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/gluPerspective.xml</a>
 
         <br className="mt-5"/>
         <h1 className="text-2xl">Camera</h1>

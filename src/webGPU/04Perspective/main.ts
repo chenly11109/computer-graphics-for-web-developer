@@ -3,7 +3,7 @@ import { createCubic } from './object';
 import { IEnviroment } from '../interface';
 import { mat4 } from './mat';
 
-export default function render({sx,sy,sz, tx,ty,tz, rx, ry, rz}:{[key:string]:number}){
+export default function render({sx, tx,ty,tz, rx, ry, rz, zNear, zFar, fov}:{[key:string]:number}){
 return function({device, context,presentationFormat, canvas}:IEnviroment){
   const module = device.createShaderModule({
     label:'a basic shader',
@@ -129,34 +129,26 @@ return function({device, context,presentationFormat, canvas}:IEnviroment){
     pass.setPipeline(pipeline);
     pass.setVertexBuffer(0, cubicVertexBuffer);
 
-    const projectionMatrix = mat4.ortho(     
-    -canvas.clientWidth/2,                  // left
-    canvas.clientWidth/2,  // right
-    canvas.clientHeight/2, // bottom
-    -canvas.clientHeight/2,                   // top
-    400,                 // near
-    -400,                // far
-     );
+const projectionMatrix = mat4.perspective(fov, canvas.clientWidth/canvas.clientHeight, zNear,zFar);
+    const scaleMatrix = mat4.scaling([sx, sx, sx]);
+    const translationMatrix = mat4.translation([tx,ty,tz]);
+    const rotationXMatrix = mat4.rotationX(rx);
+    const rotationYMatrix = mat4.rotationY(ry);
+    const rotationZMatrix = mat4.rotationZ(rz);
 
-     const scaleMatrix = mat4.scaling([sx, sy, sz]);
-     const translationMatrix = mat4.translation([tx,ty,tz]);
-     const rotationXMatrix = mat4.rotationX(rx);
-     const rotationYMatrix = mat4.rotationY(ry);
-     const rotationZMatrix = mat4.rotationZ(rz);
+    const matrix = new Float32Array(16);
 
-     const matrix = new Float32Array(16);
+    mat4.multiply(rotationXMatrix, scaleMatrix, matrix);
+    mat4.multiply(rotationYMatrix, matrix, matrix);
+    mat4.multiply(rotationZMatrix, matrix, matrix);
 
-     mat4.multiply(rotationXMatrix, scaleMatrix, matrix);
-     mat4.multiply(rotationYMatrix, matrix, matrix);
-     mat4.multiply(rotationZMatrix, matrix, matrix);
+   
+    mat4.multiply(translationMatrix, matrix, matrix);
 
-    
-     mat4.multiply(translationMatrix, matrix, matrix);
+    mat4.multiply( projectionMatrix, matrix,matrix);
 
-     mat4.multiply(projectionMatrix, matrix, matrix);
-
-     uniformValues.set(matrix);
-     device.queue.writeBuffer(uniformBuffer, 0, uniformValues);
+    uniformValues.set(matrix);
+    device.queue.writeBuffer(uniformBuffer, 0, uniformValues);
 
     pass.setBindGroup(0, bindGroup);
     pass.draw(cubicNumVertices);
