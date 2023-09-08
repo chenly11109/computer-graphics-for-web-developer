@@ -39,6 +39,32 @@ export const mat4 = {
     return dst;
   },
 
+  ortho(left:number, right:number, bottom:number, top:number, near:number, far:number, dst?: Float32Array) {
+    dst = dst || new Float32Array(16);
+
+    dst[0] = 2 / (right - left);
+    dst[1] = 0;
+    dst[2] = 0;
+    dst[3] = 0;
+
+    dst[4] = 0;
+    dst[5] = 2 / (top - bottom);
+    dst[6] = 0;
+    dst[7] = 0;
+
+    dst[8] = 0;
+    dst[9] = 0;
+    dst[10] = 1 / (near - far);
+    dst[11] = 0;
+
+    dst[12] = (right + left) / (left - right);
+    dst[13] = (top + bottom) / (bottom - top);
+    dst[14] = near / (near - far);
+    dst[15] = 1;
+
+    return dst;
+  },
+
   multiply(a: Float32Array, b: Float32Array, dst: Float32Array) {
     dst = dst || new Float32Array(16);
     const b00 = b[0 * 4 + 0];

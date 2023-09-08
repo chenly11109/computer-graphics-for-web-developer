@@ -123,17 +123,24 @@ return function({device, context,presentationFormat, canvas}:IEnviroment){
   
 
     //width/height
-    const aspect = canvas.clientWidth/canvas.clientHeight;
-    const perspectiveMatrix = mat4.perspective(fov, aspect, zNear,zFar);
-    const translationMatrix = mat4.translation([tx,ty,tz]);
+    // const aspect = canvas.clientWidth/canvas.clientHeight;
+    // const perspectiveMatrix = mat4.perspective(fov, aspect, zNear,zFar);
+
+    const perspectiveMatrix = mat4.ortho(   -canvas.clientWidth/2,                  // left
+    canvas.clientWidth/2,  // right
+    canvas.clientHeight/2, // bottom
+    -canvas.clientHeight/2,                   // top
+    400,                 // near
+    -400, )
     const cameraMatrix = lookAt([cx,cy,cz],[0,0,0],[upX,upY,upZ]);
+
+    console.log(cameraMatrix);
 
     const matrix = new Float32Array(16);
 
-    mat4.multiply(cameraMatrix, translationMatrix,matrix);
-    mat4.multiply(perspectiveMatrix, matrix,matrix);
+    mat4.multiply(cameraMatrix, perspectiveMatrix,matrix);
 
-    uniformValues.set(cameraMatrix);
+    uniformValues.set(perspectiveMatrix);
     device.queue.writeBuffer(uniformBuffer, 0, uniformValues);
 
     pass.setBindGroup(0, bindGroup);
