@@ -39,48 +39,6 @@ export const mat4 = {
     return dst;
   },
 
-  frustum(
-    left: number,
-    right: number,
-    bottom: number,
-    top: number,
-    nearVal: number,
-    farVal:number,
-    dst?:Float32Array
-  ) {
-    dst = dst || new Float32Array(16);
-
-
-
-    const A = (right+left ) / (right-left);
-    const B = (top+bottom) / (top-bottom);
-    const C = (nearVal + farVal) / (nearVal - farVal);
-    const D = -(2 * nearVal   * farVal) / (nearVal - farVal);
-
-    dst[0] = 2 * farVal / (right - left);
-    dst[1] = 0;
-    dst[2] = 0;
-    dst[3] = 0;
-
-    dst[4] = 0;
-    dst[5] = 2 * farVal / (top - bottom);
-    dst[6] = 0;
-    dst[7] = 0;
-
-    dst[8] = A;
-    dst[9] = B;
-    dst[10] =C;
-    dst[11] = -1;
-
-    dst[12] = 0;
-    dst[13] = 0;
-    dst[14] = D;
-    dst[15] = 1;
-
-
-    return dst;
-  },
-
   multiply(a: Float32Array, b: Float32Array, dst: Float32Array) {
     dst = dst || new Float32Array(16);
     const b00 = b[0 * 4 + 0];
@@ -138,43 +96,92 @@ export const mat4 = {
 
     return dst;
   },
-  scaling([sx, sy, sz]: number[], dst?: Float32Array) {
-    dst = dst || new Float32Array(16);
-    dst.set([sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, sz, 0, 0, 0, 0, 1]);
-    return dst;
-  },
 
-  translation([tx, ty, tz]: number[], dst?: Float32Array) {
+
+  translation([tx, ty, tz]: number[]|Float32Array, dst?: Float32Array) {
     dst = dst || new Float32Array(16);
     dst.set([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1]);
     return dst;
   },
+};
 
-  rotationX(deg: number, dst?: Float32Array) {
-    dst = dst || new Float32Array(16);
-    const angleInRadians = (deg / 180) * Math.PI;
-    const c = Math.cos(angleInRadians);
-    const s = Math.sin(angleInRadians);
-    dst.set([1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1]);
+export const vec3 = {
+  cross(a:Float32Array, b:Float32Array, dst?:Float32Array) {
+    dst = dst || new Float32Array(3);
 
-    return dst;
-  },
-  rotationY(deg: number, dst?: Float32Array) {
-    dst = dst || new Float32Array(16);
-    const angleInRadians = (deg / 180) * Math.PI;
-    const c = Math.cos(angleInRadians);
-    const s = Math.sin(angleInRadians);
-    dst.set([c, 0, s, 0, 0, 1, 0, 0, -s, 0, c, 0, 0, 0, 0, 1]);
+    const t0 = a[1] * b[2] - a[2] * b[1];
+    const t1 = a[2] * b[0] - a[0] * b[2];
+    const t2 = a[0] * b[1] - a[1] * b[0];
+
+    dst[0] = t0;
+    dst[1] = t1;
+    dst[2] = t2;
 
     return dst;
   },
-  rotationZ(deg: number, dst?: Float32Array) {
-    dst = dst || new Float32Array(16);
-    const angleInRadians = (deg / 180) * Math.PI;
-    const c = Math.cos(angleInRadians);
-    const s = Math.sin(angleInRadians);
-    dst.set([c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+
+  subtract(a:number[], b:number[], dst?:Float32Array) {
+    dst = dst || new Float32Array(3);
+
+    dst[0] = a[0] - b[0];
+    dst[1] = a[1] - b[1];
+    dst[2] = a[2] - b[2];
+
+    return dst;
+  },
+
+  normalize(v:number[]|Float32Array, dst?:Float32Array) {
+    dst = dst || new Float32Array(3);
+
+    const length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+    // make sure we don't divide by 0.
+    if (length > 0.00001) {
+      dst[0] = v[0] / length;
+      dst[1] = v[1] / length;
+      dst[2] = v[2] / length;
+    } else {
+      dst[0] = 0;
+      dst[1] = 0;
+      dst[2] = 0;
+    }
 
     return dst;
   },
 };
+
+export const lookAt = (
+  eye:[eyeX:number, eyeY:number, eyeZ:number],
+  center: [centerX:number, centerY:number, centerZ:number], 
+  UP:[upX:number,upY:number,upZ:number], dst?:Float32Array)=>{
+    const F = vec3.subtract(eye, center);
+    const f = vec3.normalize(F);
+    const up = vec3.normalize(UP);
+    const s = vec3.normalize(vec3.cross(f, up));
+    const u = vec3.cross(s, f);
+
+    dst = dst || new Float32Array(16);
+    dst[0] = s[0];
+    dst[1] = u[0];
+    dst[2] = -f[0];
+    dst[3] = 0;
+
+    dst[4] = s[1];
+    dst[5] = u[1];
+    dst[6] = -f[1];
+    dst[7] = 0;
+
+    dst[8] = s[2];
+    dst[9] = u[2];
+    dst[10] = -f[2];
+    dst[11] = 0;
+
+    dst[12] = s[0];
+    dst[13] = u[0];
+    dst[14] = -f[0];
+    dst[15] = 1;
+
+    const translationMatrix = mat4.translation(vec3.subtract([0,0,0],eye));
+    mat4.multiply(translationMatrix,dst,dst);
+    return dst;
+
+}

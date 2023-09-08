@@ -6,77 +6,24 @@ import { IEnviroment } from "../interface";
 
 export default function Transformation3DDemo() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { sx, tx, ty, tz, rx, ry, rz, 
-    fov, zNear, zFar, 
-    height, zNearF,zFarF, usePerspective
+  const { cx,cy,cz,tx,ty,tz,upX,upY,upZ,fov,zNear,zFar
   } = useControls({
-    object: folder({
-      sx: {
-        min: -10,
-        max: 10,
-        value: 1,
-        step: 0.1,
-      },
-
-      tx: {
-        min: -200,
-        max: 200,
-        value: 0,
-        step: 1,
-      },
-      ty: {
-        min: -200,
-        max: 200,
-        value: 0,
-        step: 1,
-      },
-      tz: {
-        min: -2000,
-        max: -100,
-        value: -300,
-        step: 1,
-      },
-      rx: {
-        min: -360,
-        max: 360,
-        value: 0,
-        step: 1,
-      },
-      ry: {
-        min: -360,
-        max: 360,
-        value: 0,
-        step: 1,
-      },
-      rz: {
-        min: -360,
-        max: 360,
-        value: 0,
-        step: 1,
-      },
+    camera: folder({
+      cx:100,
+      cy:0,
+      cz:100
     }),
-    view:folder( {
-      usePerspective:true,
-      frustum: folder({
-        height: {
-          min: 200,
-          max: 500,
-          value: 300,
-          step: 1,
-        },
-        zNearF: {
-          min: -300,
-          max: -20,
-          value: -100,
-          step: 10,
-        },
-        zFarF: {
-          min: -5000,
-          max: -500,
-          value: -1000,
-          step: 10,
-        },
+    object:folder( {
+      tx:0,
+      ty:0,
+      tz:0
       }),
+    direction: folder({
+        upX:0,
+        upY:1,
+        upZ:0
+      }),
+
       perspective: folder({
         fov: {
           min: 25,
@@ -97,20 +44,14 @@ export default function Transformation3DDemo() {
           step: 10,
         },
       }),
-     
-    })
-   ,
-  
   });
 
   const renderFn = useCallback(
     (device: IEnviroment) => {
-      return render({ sx, tx, ty, tz, rx, ry, rz, 
-        fov, zNear, zFar,
-        height, zNearF, zFarF, usePerspective
+      return render({ cx,cy,cz,tx,ty,tz,upX,upY,upZ,fov,zNear,zFar
       })(device);
     },
-    [sx, tx, ty, tz, rx, ry, rz, zNear, fov, zFar, height, zNearF, zFarF, usePerspective]
+    [cx,cy,cz,tx,ty,tz,upX,upY,upZ,fov,zNear,zFar]
   );
 
   const [device, setDevice] = useState<IEnviroment>();

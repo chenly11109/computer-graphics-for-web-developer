@@ -10,6 +10,9 @@ import Transformation3D from "./components/03Transformation3D"
 import Transformation3DDemo from './webGPU/03transformation3D';
 import Perspective from './components/04Perspective';
 import PerspectiveDemo from './webGPU/04Perspective'
+
+import Camera from './components/05Camera';
+import CameraDemo from "./webGPU/05Camera";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -42,6 +45,10 @@ const router = createBrowserRouter([
       path:'04Perspective',
       element:<Perspective/>
     },
+    {
+      path:'05Camera',
+      element:<Camera/>
+    },
   ]
   },
   {path:"webGPU/",
@@ -61,6 +68,9 @@ const router = createBrowserRouter([
 },
 {path:'04perspective',
   element:<PerspectiveDemo />
+},
+{path:'05camera',
+  element:<CameraDemo />
 },
   
    ]

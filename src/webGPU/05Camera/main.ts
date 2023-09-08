@@ -1,13 +1,10 @@
 import shader from './shader/shader.wgsl?raw';
 import { createCubic } from './object';
 import { IEnviroment } from '../interface';
-import { mat4 } from './mat';
+import { lookAt, mat4 } from './mat';
 
-export default function render({sx, tx,ty,tz, rx, ry, rz, 
-  zNear, zFar, fov,
-  height, zNearF, zFarF,
-  usePerspective
-}:{[key:string]:number} & { usePerspective:boolean}){
+export default function render({cx,cy,cz,tx,ty,tz,upX,upY,upZ,fov,zNear,zFar
+}:{[key:string]:number}){
 return function({device, context,presentationFormat, canvas}:IEnviroment){
   const module = device.createShaderModule({
     label:'a basic shader',
@@ -127,27 +124,16 @@ return function({device, context,presentationFormat, canvas}:IEnviroment){
 
     //width/height
     const aspect = canvas.clientWidth/canvas.clientHeight;
-    const frustumMatrix = mat4.frustum(  -aspect*height,aspect*height,-height,height,zNearF,zFarF);
     const perspectiveMatrix = mat4.perspective(fov, aspect, zNear,zFar);
-
-    const projectionMatrix = usePerspective?perspectiveMatrix : frustumMatrix;
-    const scaleMatrix = mat4.scaling([sx, sx, sx]);
     const translationMatrix = mat4.translation([tx,ty,tz]);
-    const rotationXMatrix = mat4.rotationX(rx);
-    const rotationYMatrix = mat4.rotationY(ry);
-    const rotationZMatrix = mat4.rotationZ(rz);
+    const cameraMatrix = lookAt([cx,cy,cz],[0,0,0],[upX,upY,upZ]);
 
     const matrix = new Float32Array(16);
 
-    mat4.multiply(rotationXMatrix, scaleMatrix, matrix);
-    mat4.multiply(rotationYMatrix, matrix, matrix);
-    mat4.multiply(rotationZMatrix, matrix, matrix);
+    mat4.multiply(cameraMatrix, translationMatrix,matrix);
+    mat4.multiply(perspectiveMatrix, matrix,matrix);
 
-   
-    mat4.multiply(translationMatrix, matrix, matrix);
-    mat4.multiply(projectionMatrix, matrix,matrix);
-
-    uniformValues.set(matrix);
+    uniformValues.set(cameraMatrix);
     device.queue.writeBuffer(uniformBuffer, 0, uniformValues);
 
     pass.setBindGroup(0, bindGroup);
