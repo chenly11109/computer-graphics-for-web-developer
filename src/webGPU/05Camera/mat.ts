@@ -182,32 +182,32 @@ export const lookAt = (
     const F = vec3.subtract(eye, center);
     const f = vec3.normalize(F);
     const up = vec3.normalize(UP);
-    const s = vec3.normalize(vec3.cross(f, up));
-    const u = vec3.cross(s, f);
+    const s = vec3.normalize(vec3.cross(up, f));
+    const u = vec3.cross(f, s);
 
     dst = dst || new Float32Array(16);
     dst[0] = s[0];
     dst[1] = u[0];
-    dst[2] = -f[0];
+    dst[2] = f[0];
     dst[3] = 0;
 
     dst[4] = s[1];
     dst[5] = u[1];
-    dst[6] = -f[1];
+    dst[6] = f[1];
     dst[7] = 0;
 
     dst[8] = s[2];
     dst[9] = u[2];
-    dst[10] = -f[2];
+    dst[10] = f[2];
     dst[11] = 0;
 
-    dst[12] = s[0];
-    dst[13] = u[0];
-    dst[14] = -f[0];
+    dst[12] = 0;
+    dst[13] = 0;
+    dst[14] = 0;
     dst[15] = 1;
 
-    const translationMatrix = mat4.translation(vec3.subtract([0,0,0],eye));
-    mat4.multiply(translationMatrix,dst,dst);
+    // const translationMatrix = mat4.translation(vec3.subtract(eye,[0,0,0]));
+    // mat4.multiply(translationMatrix,dst,dst);
     return dst;
 
 }

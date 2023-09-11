@@ -3,8 +3,8 @@ import { createCubic } from './object';
 import { IEnviroment } from '../interface';
 import { lookAt, mat4 } from './mat';
 
-export default function render({cx,cy,cz,tx,ty,tz,upX,upY,upZ,fov,zNear,zFar
-}:{[key:string]:number}){
+export default function render({cx,cy,cz,tx,ty,tz,upX,upY,upZ,fov,zNear,zFar,usePerspective
+}: {usePerspective : boolean} & {[key:string]:number}){
 return function({device, context,presentationFormat, canvas}:IEnviroment){
   const module = device.createShaderModule({
     label:'a basic shader',
@@ -123,24 +123,27 @@ return function({device, context,presentationFormat, canvas}:IEnviroment){
   
 
     //width/height
-    // const aspect = canvas.clientWidth/canvas.clientHeight;
-    // const perspectiveMatrix = mat4.perspective(fov, aspect, zNear,zFar);
+    const aspect = canvas.clientWidth/canvas.clientHeight;
+    const perspectiveProjection= mat4.perspective(fov, aspect, zNear,zFar);
 
-    const perspectiveMatrix = mat4.ortho(   -canvas.clientWidth/2,                  // left
+    const orthoProjectionMatrix = mat4.ortho(   -canvas.clientWidth/2,                  // left
     canvas.clientWidth/2,  // right
-    canvas.clientHeight/2, // bottom
-    -canvas.clientHeight/2,                   // top
+    -canvas.clientHeight/2, // bottom
+    canvas.clientHeight/2,                   // top
     400,                 // near
     -400, )
     const cameraMatrix = lookAt([cx,cy,cz],[0,0,0],[upX,upY,upZ]);
 
-    console.log(cameraMatrix);
-
     const matrix = new Float32Array(16);
 
-    mat4.multiply(cameraMatrix, perspectiveMatrix,matrix);
 
-    uniformValues.set(perspectiveMatrix);
+    const translationMatrix = mat4.translation([tx,ty,tz]);
+    mat4.multiply(cameraMatrix, translationMatrix, matrix);
+
+    const projectionMatrix = usePerspective ? perspectiveProjection : orthoProjectionMatrix;
+    mat4.multiply( projectionMatrix,matrix,matrix);
+
+    uniformValues.set(matrix);
     device.queue.writeBuffer(uniformBuffer, 0, uniformValues);
 
     pass.setBindGroup(0, bindGroup);
