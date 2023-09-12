@@ -1,7 +1,8 @@
 import shader from "./shader/shader.wgsl?raw";
-import { createCubic } from "./object/object";
+// import { createCubic } from "./object/object";
 import { IEnviroment } from "../interface";
 import { MatrixStack } from "./object/stack";
+import { createTeapot } from "./object/teaport";
 
 export default function render({
   cx,
@@ -38,10 +39,10 @@ export default function render({
         entryPoint: "vs",
         buffers: [
           {
-            arrayStride: 4 * 4, // (3) floats 4 bytes each + one 4 byte color
+            arrayStride: 4 * 3, // (3) floats 4 bytes each + one 4 byte color
             attributes: [
               { shaderLocation: 0, offset: 0, format: "float32x3" }, // position
-              { shaderLocation: 1, offset: 12, format: "unorm8x4" }, // color
+              // { shaderLocation: 1, offset: 12, format: "unorm8x4" }, // color
             ],
           },
         ],
@@ -62,13 +63,22 @@ export default function render({
     });
 
     //初始化data(vertex, color, etc.)
-    const { cubicVertexData, cubicNumVertices } = createCubic();
-    const cubicVertexBuffer = device.createBuffer({
-      label: "plan buffer vertices",
-      size: cubicVertexData.byteLength,
-      usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-    });
-    device.queue.writeBuffer(cubicVertexBuffer, 0, cubicVertexData);
+    // const { cubicVertexData, cubicNumVertices } = createCubic();
+    // const cubicVertexBuffer = device.createBuffer({
+    //   label: "plan buffer vertices",
+    //   size: cubicVertexData.byteLength,
+    //   usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+    // });
+    // device.queue.writeBuffer(cubicVertexBuffer, 0, cubicVertexData);
+
+    const {vertexData:teapotVertexData, numVertices:teapotNumVertices} = createTeapot();
+    const teapotVertexBuffer = device.createBuffer({
+      label:'teapot vertices',
+      size:teapotVertexData.byteLength,
+      usage:GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
+    })
+  
+    device.queue.writeBuffer(teapotVertexBuffer, 0, teapotVertexData);
 
     const uniformBufferSize = 16 * 4;
     const uniformBuffer = device.createBuffer({
@@ -139,7 +149,7 @@ export default function render({
         return;
       }
       pass.setPipeline(pipeline);
-      pass.setVertexBuffer(0, cubicVertexBuffer);
+      pass.setVertexBuffer(0, teapotVertexBuffer);
 
       //width/height
       const aspect = canvas.clientWidth / canvas.clientHeight;
@@ -159,13 +169,14 @@ export default function render({
       }
 
       matrixStack.lookAt([cx, cy, cz], [0, 0, 0], [upX, upY, upZ]);
+      matrixStack.scale([10,10,10]);
       matrixStack.translate([tx, ty, tz]);
 
       uniformValues.set(matrixStack.getCurrMatrix());
       device.queue.writeBuffer(uniformBuffer, 0, uniformValues);
 
       pass.setBindGroup(0, bindGroup);
-      pass.draw(cubicNumVertices);
+      pass.draw(teapotNumVertices);
       pass.end();
 
       const commandBuffer = encoder.finish();
