@@ -18,6 +18,8 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import './index.css'
+import MatrixStack from './components/06MatrixStack/index.tsx';
+import MatrixStackDemo from './webGPU/06MatrixStack/index.tsx';
 
 const router = createBrowserRouter([
   {
@@ -49,6 +51,10 @@ const router = createBrowserRouter([
       path:'05Camera',
       element:<Camera/>
     },
+    {
+      path:'06Matrix',
+      element:<MatrixStack/>
+    },
   ]
   },
   {path:"webGPU/",
@@ -71,6 +77,9 @@ const router = createBrowserRouter([
 },
 {path:'05camera',
   element:<CameraDemo />
+},
+{path:'06MatrixStack',
+  element:<MatrixStackDemo />
 },
   
    ]

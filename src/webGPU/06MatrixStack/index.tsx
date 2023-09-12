@@ -4,7 +4,7 @@ import render from "./main";
 import { useControls, folder } from "leva";
 import { IEnviroment } from "../interface";
 
-export default function Transformation3DDemo() {
+export default function MatrixStackDemo() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { cx, cy, cz, tx, ty, tz, upX, upY, upZ, fov, zNear, zFar, usePerspective } =
     useControls({
@@ -83,8 +83,6 @@ export default function Transformation3DDemo() {
 
   const renderFn = useCallback(
     (device: IEnviroment) => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
       return render({
         cx,
         cy,
@@ -99,7 +97,7 @@ export default function Transformation3DDemo() {
         zNear,
         zFar,
         usePerspective
-      })(device);
+      } as any)(device);
     },
     [cx, cy, cz, tx, ty, tz, upX, upY, upZ, fov, zNear, zFar, usePerspective]
   );

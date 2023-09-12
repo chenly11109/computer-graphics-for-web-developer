@@ -1,4 +1,4 @@
-import { getData3D } from "../utils/getData";
+import { getData3D } from "../../utils/getData";
 
 export const createCubic = () => {
     const positions = [
@@ -33,7 +33,7 @@ export const createCubic = () => {
         5, 2, 6,
         //left
         0, 7, 3,
-        0, 7, 4,
+        0, 4, 7,
         //top
         4, 0, 1,
         4, 1, 5,

@@ -9,6 +9,7 @@ export default function Notes(){
     <NavLink className={({isActive})=>isActive?"underline block":"block"} to="03transformation3D">Transformation3D</NavLink>
     <NavLink className={({isActive})=>isActive?"underline block":"block"} to="04perspective">Perspective</NavLink>
     <NavLink className={({isActive})=>isActive?"underline block":"block"} to="05camera">Camera</NavLink>
+    <NavLink className={({isActive})=>isActive?"underline block":"block"} to="06matrix">Matrix Stack</NavLink>
 </section>
         <Outlet />
     </main>
