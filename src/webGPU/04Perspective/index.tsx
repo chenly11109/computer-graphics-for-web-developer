@@ -105,6 +105,8 @@ export default function Transformation3DDemo() {
 
   const renderFn = useCallback(
     (device: IEnviroment) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
       return render({ sx, tx, ty, tz, rx, ry, rz, 
         fov, zNear, zFar,
         height, zNearF, zFarF, usePerspective

@@ -1,3 +1,5 @@
+Notes for web devlopers interested in computer graphics. Still in progress.
+
 # vite
    - pnpm
    - typescript
@@ -14,5 +16,5 @@
    - 3D Viewer
 
 # computer graphics
-   - CSE 167 Computer Graphics, UCSD on edX
+   - Based on Courses for Computer Graphics
 
