@@ -3,6 +3,7 @@ import shader from "./shader/shader.wgsl?raw";
 import { IEnviroment } from "../interface";
 import { MatrixStack } from "./object/stack";
 import { createTeapot } from "./object/teaport";
+import { createCubicIndices } from "../03transformation3D/object";
 
 export default function render({
   cx,
@@ -53,7 +54,7 @@ export default function render({
         targets: [{ format: presentationFormat }],
       },
       primitive: {
-        cullMode: "none",
+        cullMode: "back",
       },
       depthStencil: {
         depthWriteEnabled: true,
@@ -62,23 +63,34 @@ export default function render({
       },
     });
 
-    //初始化data(vertex, color, etc.)
-    // const { cubicVertexData, cubicNumVertices } = createCubic();
-    // const cubicVertexBuffer = device.createBuffer({
-    //   label: "plan buffer vertices",
-    //   size: cubicVertexData.byteLength,
-    //   usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-    // });
-    // device.queue.writeBuffer(cubicVertexBuffer, 0, cubicVertexData);
-
-    const {vertexData:teapotVertexData, numVertices:teapotNumVertices} = createTeapot();
+    //初始化data(vertex, color, etc.) 
+    const {vertexData:teapotVertexData, indexData:teapotIndexData,numIndices:teapotNumIndices} = createTeapot();
     const teapotVertexBuffer = device.createBuffer({
       label:'teapot vertices',
       size:teapotVertexData.byteLength,
       usage:GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
     })
+    const teapotIndexBuffer = device.createBuffer({
+      label:'teapot vertices',
+      size:teapotIndexData.byteLength,
+      usage:GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
+    })
   
-    device.queue.writeBuffer(teapotVertexBuffer, 0, teapotVertexData);
+  
+
+  const {cubicIndexData,cubicNumIndices,cubicVertexData} = createCubicIndices();
+  const cubicVertexBuffer = device.createBuffer({
+      label:'cubic vertices',
+      size:cubicVertexData.byteLength,
+      usage:GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
+    })
+  const cubicIndexBuffer = device.createBuffer({
+      label:'cubic indices',
+      size:cubicIndexData.byteLength,
+      usage:GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
+    })
+
+  
 
     const uniformBufferSize = 16 * 4;
     const uniformBuffer = device.createBuffer({
@@ -149,12 +161,11 @@ export default function render({
         return;
       }
       pass.setPipeline(pipeline);
-      pass.setVertexBuffer(0, teapotVertexBuffer);
-
+      // matrixStack.scale([20,20,20]);
+      matrixStack.translate([tx, ty, tz]);
       //width/height
       const aspect = canvas.clientWidth / canvas.clientHeight;
       // const perspectiveProjection= mat4.perspective(fov, aspect, zNear,zFar);
-
       if (usePerspective) {
         matrixStack.perspective(fov, aspect, zNear, zFar);
       } else {
@@ -167,16 +178,24 @@ export default function render({
           -400
         );
       }
-
       matrixStack.lookAt([cx, cy, cz], [0, 0, 0], [upX, upY, upZ]);
-      matrixStack.scale([10,10,10]);
-      matrixStack.translate([tx, ty, tz]);
 
       uniformValues.set(matrixStack.getCurrMatrix());
       device.queue.writeBuffer(uniformBuffer, 0, uniformValues);
-
       pass.setBindGroup(0, bindGroup);
-      pass.draw(teapotNumVertices);
+
+      pass.setVertexBuffer(0, teapotVertexBuffer);
+      pass.setIndexBuffer(teapotIndexBuffer,"uint32" )
+      device.queue.writeBuffer(teapotVertexBuffer, 0, teapotVertexData);
+      device.queue.writeBuffer(teapotIndexBuffer, 0, teapotIndexData);
+      pass.drawIndexed(teapotNumIndices);
+
+      pass.setVertexBuffer(0, cubicVertexBuffer);
+      pass.setIndexBuffer(cubicIndexBuffer, "uint16");
+      device.queue.writeBuffer(cubicVertexBuffer, 0, cubicVertexData);
+      device.queue.writeBuffer(cubicIndexBuffer, 0, cubicIndexData);
+      pass.drawIndexed(cubicNumIndices);
+
       pass.end();
 
       const commandBuffer = encoder.finish();

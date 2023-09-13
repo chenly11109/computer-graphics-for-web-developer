@@ -41,3 +41,16 @@ export const getData3D = (positions:number[],indices:number[],  quadColors:numbe
       numVertices
     }
 }
+
+export const getData3DIndices = (positions:number[],indices:number[])=>{
+  const numIndices = indices.length;
+  const vertexData = new Float32Array(positions); // xyz 
+  const indexData = new Uint16Array(indices);
+
+
+    return {
+      vertexData,
+      numIndices,
+      indexData
+    }
+}

@@ -50,7 +50,7 @@ export class MatrixStack {
     }
 
     private applyMatrix(matrix?:Float32Array){
-      this.m_currMatrix = matrix? mat4.multiply(this.m_currMatrix, matrix) : this.m_currMatrix
+      this.m_currMatrix = matrix? mat4.multiply( matrix,this.m_currMatrix) : this.m_currMatrix
     }
 
     rotateX(deg:number){
