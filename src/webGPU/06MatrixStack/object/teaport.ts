@@ -12,7 +12,7 @@ export const createTeapot = ()=>{
 
     const numIndices = teapotIndices.length;
     const vertexData = new Float32Array(teapotVertex); //xyz
-    const indexData = new Uint32Array(teapotIndices);
+    const indexData = new Uint16Array(teapotIndices);
 
    return {
     vertexData,

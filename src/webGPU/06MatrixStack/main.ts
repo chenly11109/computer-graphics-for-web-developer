@@ -4,6 +4,7 @@ import { IEnviroment } from "../interface";
 import { MatrixStack } from "./object/stack";
 import { createTeapot } from "./object/teaport";
 import { createCubicIndices } from "../03transformation3D/object";
+import { createPlan } from "./object/plan";
 
 export default function render({
   cx,
@@ -19,7 +20,9 @@ export default function render({
   zNear,
   zFar,
   usePerspective,
-}: { usePerspective: boolean } & { [key: string]: number }) {
+  imageBitMap
+}: { usePerspective: boolean, imageBitMap:ImageBitmap } & { [key: string]: number }) {
+
   return function ({
     device,
     context,
@@ -90,7 +93,27 @@ export default function render({
       usage:GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
     })
 
-  
+    const {planNumIndices, planVertexData, planIndexData} = createPlan();
+    const planVertexBuffer = device.createBuffer({
+      label:'plan vertices',
+      size:planVertexData.byteLength,
+      usage:GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
+    })
+
+    const planIndexBuffer = device.createBuffer({
+      label:'plan index',
+      size:planIndexData.byteLength,
+      usage:GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
+    })
+
+    const planTexture = device.createTexture({
+      size:[imageBitMap.width, imageBitMap.height, 1],
+      format:'rgba8unorm',
+      usage:GPUTextureUsage.TEXTURE_BINDING |
+      GPUTextureUsage.COPY_DST |
+      GPUTextureUsage.RENDER_ATTACHMENT,
+    })
+
 
     const uniformBufferSize = 16 * 4;
     const uniformBuffer = device.createBuffer({
@@ -184,17 +207,33 @@ export default function render({
       device.queue.writeBuffer(uniformBuffer, 0, uniformValues);
       pass.setBindGroup(0, bindGroup);
 
+      //teapot
       pass.setVertexBuffer(0, teapotVertexBuffer);
-      pass.setIndexBuffer(teapotIndexBuffer,"uint32" )
+      pass.setIndexBuffer(teapotIndexBuffer,"uint16" )
       device.queue.writeBuffer(teapotVertexBuffer, 0, teapotVertexData);
       device.queue.writeBuffer(teapotIndexBuffer, 0, teapotIndexData);
       pass.drawIndexed(teapotNumIndices);
 
+
+      //cubic
       pass.setVertexBuffer(0, cubicVertexBuffer);
       pass.setIndexBuffer(cubicIndexBuffer, "uint16");
       device.queue.writeBuffer(cubicVertexBuffer, 0, cubicVertexData);
       device.queue.writeBuffer(cubicIndexBuffer, 0, cubicIndexData);
-      pass.drawIndexed(cubicNumIndices);
+      // pass.drawIndexed(cubicNumIndices);
+
+      //plan
+      pass.setVertexBuffer(0, planVertexBuffer);
+      pass.setIndexBuffer(planIndexBuffer, "uint16");
+      device.queue.writeBuffer(planVertexBuffer, 0 , planVertexData);
+      device.queue.writeBuffer(planIndexBuffer, 0, planIndexData);
+      device.queue.copyExternalImageToTexture(
+        { source: imageBitMap },
+        { texture: planTexture },
+        [imageBitMap.width, imageBitMap.height]
+      );
+
+      pass.drawIndexed(planNumIndices);
 
       pass.end();
 

@@ -3,10 +3,11 @@ import { defaultStart } from "../utils/defaultStart";
 import render from "./main";
 import { useControls, folder } from "leva";
 import { IEnviroment } from "../interface";
+import { createPlanTexture } from "./object/plan";
 
 export default function MatrixStackDemo() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { cx, cy, cz, tx, ty, tz, upX, upY, upZ, fov, zNear, zFar, usePerspective } =
+  const { cx, cy, cz, tx, ty, tz, upX, upY, upZ, fov, zNear, zFar, usePerspective} =
     useControls({
       camera: folder({
         position: folder({
@@ -81,6 +82,8 @@ export default function MatrixStackDemo() {
       }),
     });
 
+    const [imageBitMap, setImageBitMap] = useState<ImageBitmap>();
+
   const renderFn = useCallback(
     (device: IEnviroment) => {
       return render({
@@ -96,19 +99,21 @@ export default function MatrixStackDemo() {
         fov,
         zNear,
         zFar,
-        usePerspective
+        usePerspective,
+        imageBitMap 
       } as any)(device);
     },
-    [cx, cy, cz, tx, ty, tz, upX, upY, upZ, fov, zNear, zFar, usePerspective]
+    [cx, cy, cz, tx, ty, tz, upX, upY, upZ, fov, zNear, zFar, usePerspective, imageBitMap]
   );
 
   const [device, setDevice] = useState<IEnviroment>();
-
   useEffect(() => {
     if (!canvasRef.current) return;
     defaultStart(canvasRef.current).then((device) => {
       setDevice(device);
     });
+
+    createPlanTexture().then((image)=>setImageBitMap(image));
   }, [canvasRef]);
 
   const observerRef = useRef<ResizeObserver>();
@@ -119,7 +124,7 @@ export default function MatrixStackDemo() {
     }
     //为了在刚开始渲染的时候，清晰度就足够
     observerRef.current = new ResizeObserver((entries) => {
-      if (!device) return;
+      if (!device || !imageBitMap) return;
       for (const entry of entries) {
         const canvas = entry.target as HTMLCanvasElement;
         const width = entry.contentBoxSize[0].inlineSize;
@@ -140,9 +145,9 @@ export default function MatrixStackDemo() {
   }, [device, renderFn]);
 
   useEffect(() => {
-    if (!device) return;
+    if (!device || !imageBitMap) return;
     renderFn(device)();
-  }, [renderFn, device]);
+  }, [renderFn, device, imageBitMap]);
   return (
     <canvas
       ref={canvasRef}
