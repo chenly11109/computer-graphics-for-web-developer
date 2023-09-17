@@ -7,7 +7,7 @@ import { createPlanTexture } from "./object/plan";
 
 export default function MatrixStackDemo() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { cx, cy, cz, tx, ty, tz, upX, upY, upZ, fov, zNear, zFar, usePerspective} =
+  const { cx, cy, cz, tx, ty, tz, upX, upY, upZ, fov, zNear, zFar} =
     useControls({
       camera: folder({
         position: folder({
@@ -57,8 +57,7 @@ export default function MatrixStackDemo() {
         },
       }),
 
-      view: folder({
-        usePerspective: true,
+   
         perspective: folder({
           fov: {
             min: 25,
@@ -79,7 +78,7 @@ export default function MatrixStackDemo() {
             step: 10,
           },
         }),
-      }),
+
     });
 
     const [imageBitMap, setImageBitMap] = useState<ImageBitmap>();
@@ -99,11 +98,10 @@ export default function MatrixStackDemo() {
         fov,
         zNear,
         zFar,
-        usePerspective,
         imageBitMap 
       } as any)(device);
     },
-    [cx, cy, cz, tx, ty, tz, upX, upY, upZ, fov, zNear, zFar, usePerspective, imageBitMap]
+    [cx, cy, cz, tx, ty, tz, upX, upY, upZ, fov, zNear, zFar, imageBitMap]
   );
 
   const [device, setDevice] = useState<IEnviroment>();

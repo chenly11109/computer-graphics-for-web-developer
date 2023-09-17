@@ -3,7 +3,7 @@ import shader from "./shader/shader.wgsl?raw";
 import { IEnviroment } from "../interface";
 import { MatrixStack } from "./object/stack";
 import { createTeapot } from "./object/teaport";
-import { createCubicIndices } from "../03transformation3D/object";
+import { createCubicIndices } from "./object/object";
 import { createPlan } from "./object/plan";
 
 export default function render({
@@ -19,9 +19,8 @@ export default function render({
   fov,
   zNear,
   zFar,
-  usePerspective,
   imageBitMap
-}: { usePerspective: boolean, imageBitMap:ImageBitmap } & { [key: string]: number }) {
+}: {imageBitMap:ImageBitmap } & { [key: string]: number }) {
 
   return function ({
     device,
@@ -36,7 +35,7 @@ export default function render({
 
     // 初始化shader/pipeline(GPU)
     const pipeline = device.createRenderPipeline({
-      label: "render cubic",
+      label: "render pipeline",
       layout: "auto",
       vertex: {
         module,
@@ -57,7 +56,7 @@ export default function render({
         targets: [{ format: presentationFormat }],
       },
       primitive: {
-        cullMode: "back",
+        cullMode: "none",
       },
       depthStencil: {
         depthWriteEnabled: true,
@@ -114,6 +113,17 @@ export default function render({
       GPUTextureUsage.RENDER_ATTACHMENT,
     })
 
+    const samplerDescriptor : GPUSamplerDescriptor = {
+      addressModeU: 'clamp-to-edge',
+      addressModeV: 'clamp-to-edge',
+      magFilter: 'nearest',
+      minFilter: 'nearest',
+    }
+
+    const sampler = device.createSampler(samplerDescriptor);
+  
+
+
 
     const uniformBufferSize = 16 * 4;
     const uniformBuffer = device.createBuffer({
@@ -122,11 +132,24 @@ export default function render({
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
     const uniformValues = new Float32Array(uniformBufferSize / 4);
-    const bindGroup = device.createBindGroup({
-      label: "bind group for view matrix",
-      layout: pipeline.getBindGroupLayout(0),
-      entries: [{ binding: 0, resource: { buffer: uniformBuffer } }],
+
+    const objectTypeBufferSize = 16;
+
+
+    const textureBindGroup = device.createBindGroup({
+      label: "bind group for texture",
+      layout: pipeline.getBindGroupLayout(1),
+      entries: [
+                {binding:1, resource:sampler},
+                {binding:2, resource:planTexture.createView()}
+      ],
     });
+
+    const viewMatrixBindGroup = device.createBindGroup({
+      label:'bind group for view',
+      layout:pipeline.getBindGroupLayout(2),
+      entries:[{binding:0, resource:{buffer:uniformBuffer}}]
+    })
     const clearColor = { r: 0, g: 0, b: 0, a: 1.0 };
 
     // 设定一条渲染的线程
@@ -152,6 +175,29 @@ export default function render({
     let depthTexture: GPUTexture;
 
     const matrixStack = new MatrixStack();
+
+    const objectTypeBuffer = device.createBuffer({
+      label:'object type buffer1',
+      size:objectTypeBufferSize,
+      usage:GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+    })
+    const objectTypeBindGroup =   device.createBindGroup({
+      label:'bind group for object',
+      layout:pipeline.getBindGroupLayout(0),
+      entries:[{binding:0, resource:{buffer:objectTypeBuffer}}]})
+      device.queue.writeBuffer(objectTypeBuffer, 0, new Uint32Array([1]));
+
+
+      const objectTypeBuffer2 = device.createBuffer({
+        label:'object type buffer2',
+        size:objectTypeBufferSize,
+        usage:GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+      })
+      const objectType2BindGroup =   device.createBindGroup({
+        label:'bind group for object',
+        layout:pipeline.getBindGroupLayout(0),
+        entries:[{binding:0, resource:{buffer:objectTypeBuffer2}}]})
+        device.queue.writeBuffer(objectTypeBuffer2, 0, new Uint32Array([0]));
 
     return function render() {
       //view必须在创建context时动态render
@@ -184,28 +230,19 @@ export default function render({
         return;
       }
       pass.setPipeline(pipeline);
-      // matrixStack.scale([20,20,20]);
+      pass.setBindGroup(1, textureBindGroup);
+
+      matrixStack.scale([20,20,20]);
       matrixStack.translate([tx, ty, tz]);
       //width/height
       const aspect = canvas.clientWidth / canvas.clientHeight;
-      // const perspectiveProjection= mat4.perspective(fov, aspect, zNear,zFar);
-      if (usePerspective) {
-        matrixStack.perspective(fov, aspect, zNear, zFar);
-      } else {
-        matrixStack.ortho(
-          -canvas.clientWidth / 2, // left
-          canvas.clientWidth / 2, // right
-          -canvas.clientHeight / 2, // bottom
-          canvas.clientHeight / 2, // top
-          400, // near
-          -400
-        );
-      }
+      matrixStack.perspective(fov, aspect, zNear, zFar);
       matrixStack.lookAt([cx, cy, cz], [0, 0, 0], [upX, upY, upZ]);
 
       uniformValues.set(matrixStack.getCurrMatrix());
       device.queue.writeBuffer(uniformBuffer, 0, uniformValues);
-      pass.setBindGroup(0, bindGroup);
+      pass.setBindGroup(2, viewMatrixBindGroup);     
+      pass.setBindGroup(0, objectTypeBindGroup);
 
       //teapot
       pass.setVertexBuffer(0, teapotVertexBuffer);
@@ -220,8 +257,10 @@ export default function render({
       pass.setIndexBuffer(cubicIndexBuffer, "uint16");
       device.queue.writeBuffer(cubicVertexBuffer, 0, cubicVertexData);
       device.queue.writeBuffer(cubicIndexBuffer, 0, cubicIndexData);
-      // pass.drawIndexed(cubicNumIndices);
+      pass.drawIndexed(cubicNumIndices);
+      pass.setBindGroup(0, objectType2BindGroup);
 
+      
       //plan
       pass.setVertexBuffer(0, planVertexBuffer);
       pass.setIndexBuffer(planIndexBuffer, "uint16");

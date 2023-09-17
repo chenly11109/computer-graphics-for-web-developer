@@ -11,7 +11,7 @@ export default function MatrixStack(){
         reference: openGL MatrixStack Class
         https://katie.cs.mtech.edu/classes/csci441/Slides/11-MatrixStacks.pdf
         http://edeleastar.github.io/opengl-programming/topic05/pdf/3.MatrixStacks.pdf
-        <h2 className="text-2xl">Load Model</h2>
+        <h2 className="text-2xl">Load Model(obj)</h2>
         <h2 className="text-2xl">Load Texture</h2>
 
        

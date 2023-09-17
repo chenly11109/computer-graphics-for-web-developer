@@ -1,24 +1,24 @@
-import { getData3D } from "../../utils/getData";
+import { getData3DIndices } from "../../utils/getData";
 
-export const createCubic = () => {
+export const createCubicIndices = () => {
     const positions = [
         //0
-        -50,-50,50,
+        -1,-1,1,
         //1
-        50, -50, 50,
+        1, -1, 1,
         //2
-        50, 50, 50,
+        1, 1, 1,
         //3
-        -50, 50,50,
+        -1, 1,1,
 
           //4
-          -50,-50,-50,
+          -1,-1,-1,
           //5
-          50, -50, -50,
+          1, -1, -1,
           //6
-          50, 50, -50,
+          1, 1, -1,
           //7
-          -50, 50, -50,
+          -1, 1, -1,
     ];
 
     const indices = [
@@ -43,22 +43,14 @@ export const createCubic = () => {
 
     ];
 
-    const quadColors = [
-        200, 70, 120,
-        200, 70, 120,
 
-        80, 70, 200,
-        80, 70, 200,
-       
-        160, 160, 120,
-        160, 160, 120,
-    ]
+    const { vertexData, numIndices, indexData } = getData3DIndices(positions, indices)
 
-
-    const { vertexData, numVertices } = getData3D(positions, indices, quadColors)
 
     return {
         cubicVertexData: vertexData,
-        cubicNumVertices: numVertices
+        cubicNumIndices: numIndices,
+        cubicIndexData:indexData
     }
 }
+
