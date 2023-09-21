@@ -144,10 +144,19 @@ const [rotateZ, setRotateZ] = useState(0);
     renderFn(device)();
   }, [renderFn, device, imageBitMap]);
   return (
-    <canvas
+    <>
+        <canvas
       ref={canvasRef}
       id="canvas"
       className="bg-black w-screen h-screen"
     ></canvas>
+
+    <div className="text-white fixed left-10 top-10 bg-neutral-800 p-2 rounded-md">
+      <div>press 'w,s' to rotate in x-z</div>
+      <div>press 'a,d' to rotate in x-y plan</div> 
+    </div>
+    
+    </>
+
   );
 }

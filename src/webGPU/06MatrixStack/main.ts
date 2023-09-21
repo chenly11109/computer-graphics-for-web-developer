@@ -164,7 +164,6 @@ export default function render({
   device.queue.writeBuffer(cubicIndexBuffer, 0, cubicIndexData);
 
   [0,1,2,3].forEach(index=>{
-    console.log(index);
     const cubicTransformBuffer = device.createBuffer({
       label:'cubic transform buffer',
       size:transformBufferSize,
@@ -256,6 +255,25 @@ export default function render({
     ],
   });
 
+  const planTransformBuffer = device.createBuffer({
+    label:'teapot transform buffer',
+    size:transformBufferSize,
+    usage:GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+  })
+  const planMatrixStack = new MatrixStack();
+  planMatrixStack.scale([3,3,3])
+  const planTransformValue = new Float32Array( planMatrixStack.getCurrMatrix());
+  device.queue.writeBuffer(planTransformBuffer, 0, planTransformValue);
+
+  const planBindGroup = device.createBindGroup({
+    label: 'bind group for plan',
+    layout: pipeline.getBindGroupLayout(3),
+    entries: [
+      { binding: 0, resource: { buffer: teapotColorBuffer }},
+      { binding: 1, resource: { buffer: planTransformBuffer }},
+    ],
+  });
+
 
   //view matrix uniform
     const uniformBufferSize = 16 * 4;
@@ -332,14 +350,18 @@ export default function render({
       pass.setPipeline(pipeline);
       pass.setBindGroup(1, textureBindGroup);
 
+
+      //the sequence of scale, rotation and translate matters!
       matrixStack.scale([20,20,20]);
+      //camera rotation
+      matrixStack.rotateX(rotateX);
+      matrixStack.rotateZ(rotateZ);
       matrixStack.translate([tx, ty, tz]);
       //width/height
       const aspect = canvas.clientWidth / canvas.clientHeight;
       matrixStack.perspective(fov, aspect, zNear, zFar);
-      matrixStack.lookAt([0,0,500], [0, 0, 0], [0, 1, 0]);
-      matrixStack.rotateX(rotateX);
-      matrixStack.rotateZ(rotateZ);
+      matrixStack.lookAt([0,0,500], [0, 0, -400], [0, 1, 0]);
+   
 
       uniformValues.set(matrixStack.getCurrMatrix());
       device.queue.writeBuffer(uniformBuffer, 0, uniformValues);
@@ -347,7 +369,6 @@ export default function render({
       
       pass.setBindGroup(0, objectTypeBindGroup);
       objects1Info.forEach(({vertexBuffer,indexBuffer,numIndices,attrBindGroup})=>{
-        console.log(attrBindGroup, 'attrBindGroup');
         pass.setBindGroup(3, attrBindGroup);
         pass.setVertexBuffer(0,vertexBuffer);
         pass.setIndexBuffer(indexBuffer, "uint16");
@@ -358,7 +379,9 @@ export default function render({
       pass.setBindGroup(0, objectType2BindGroup);
       pass.setVertexBuffer(0, planVertexBuffer);
       pass.setIndexBuffer(planIndexBuffer, "uint16");
+      pass.setBindGroup(3, planBindGroup);
       pass.drawIndexed(planNumIndices);
+
       pass.end();
 
       const commandBuffer = encoder.finish();
