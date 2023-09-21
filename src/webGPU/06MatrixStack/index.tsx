@@ -7,35 +7,8 @@ import { createPlanTexture } from "./object/plan";
 
 export default function MatrixStackDemo() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { cx, cy, cz, tx, ty, tz, upX, upY, upZ, fov, zNear, zFar} =
+  const { tx, ty, tz,fov, zNear, zFar} =
     useControls({
-      camera: folder({
-        position: folder({
-          cx: {
-            min: -500,
-            max: 500,
-            value: 0,
-            step: 5,
-          },
-          cy: {
-            min: -500,
-            max: 500,
-            value: 0,
-            step: 5,
-          },
-          cz: {
-            min: -500,
-            max: 500,
-            value: 500,
-            step: 5,
-          },
-        }),
-        direction: folder({
-          upX: {min:-1, max:1,value:0, step:0.1},
-          upY: {min:-1, max:1,value:1, step:0.1},
-          upZ: {min:-1, max:1,value:0, step:0.1},
-        }),
-      }),
       object: folder({
         tx: {
           min: -500,
@@ -74,34 +47,58 @@ export default function MatrixStackDemo() {
           zFar: {
             min: -5000,
             max: -300,
-            value: -1000,
+            value: -500,
             step: 10,
           },
         }),
 
     });
-
+const [rotateX, setRotateX] = useState(0);
+const [rotateZ, setRotateZ] = useState(0);
     const [imageBitMap, setImageBitMap] = useState<ImageBitmap>();
 
+    const handleKeyDown = (e:any)=>{
+      switch(e?.key){
+        case 'w':
+          setRotateX(X =>X-5);
+          break;
+        case 's':
+          setRotateX(X =>X+5);
+          break
+        case 'a':
+          setRotateZ(Z=>Z+5);
+            break
+        case 'd':
+          setRotateZ(Z=>Z-5);
+          break
+
+        case 'r':
+          setRotateX(0);
+          setRotateZ(0);
+          break;
+        default:
+          return
+      }
+    }
+    useEffect(()=>{
+      document.addEventListener("keydown", handleKeyDown)
+      return ()=>{document.removeEventListener("keydown", handleKeyDown)};
+    },[])
   const renderFn = useCallback(
     (device: IEnviroment) => {
       return render({
-        cx,
-        cy,
-        cz,
+        rotateX,
+        rotateZ,
         tx,
         ty,
         tz,
-        upX,
-        upY,
-        upZ,
         fov,
         zNear,
         zFar,
         imageBitMap 
       } as any)(device);
     },
-    [cx, cy, cz, tx, ty, tz, upX, upY, upZ, fov, zNear, zFar, imageBitMap]
+    [rotateX, rotateZ, tx, ty, tz, fov, zNear, zFar, imageBitMap]
   );
 
   const [device, setDevice] = useState<IEnviroment>();

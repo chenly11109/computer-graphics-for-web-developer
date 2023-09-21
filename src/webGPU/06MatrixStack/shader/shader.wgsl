@@ -17,8 +17,8 @@ struct FS {
 @group(1) @binding(1) var samp: sampler;
 @group(1) @binding(2) var tex: texture_2d<f32>;
 @group(2) @binding(0) var<uniform> viewMatrix: mat4x4f;
-
-@group(1) @binding(0) var<uniform> fColor:vec4f;
+@group(3) @binding(0) var<uniform> fColor:vec4f;
+@group(3) @binding(1) var<uniform> objectMatrix: mat4x4f;
 
 
 @vertex fn vs(vert: Vertex)->VSOutput{
@@ -31,16 +31,15 @@ struct FS {
     vec2(0.0, 1.0),
   );
 
-    vsOut.position =viewMatrix * vert.position;
+    vsOut.position = viewMatrix*objectMatrix * vert.position;
     vsOut.fragUV = uv[vert.vertexIndex ];
-
     return vsOut;
 }
 
 @fragment fn fs(@location(0) fragUV: vec2f,)->@location(0) vec4f{
     var color : vec4f;
     if(objectType == 1){
-        color = vec4f(0,0,1,1);
+        color = fColor;
         }else{
      color = textureSample(tex, samp, fragUV);
     }
