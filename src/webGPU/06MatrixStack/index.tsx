@@ -54,7 +54,7 @@ export default function MatrixStackDemo() {
 
     });
 const [rotateX, setRotateX] = useState(0);
-const [rotateZ, setRotateZ] = useState(0);
+const [rotateY, setrotateY] = useState(0);
     const [imageBitMap, setImageBitMap] = useState<ImageBitmap>();
 
     const handleKeyDown = (e:any)=>{
@@ -66,15 +66,15 @@ const [rotateZ, setRotateZ] = useState(0);
           setRotateX(X =>X+5);
           break
         case 'a':
-          setRotateZ(Z=>Z+5);
+          setrotateY(Z=>Z+5);
             break
         case 'd':
-          setRotateZ(Z=>Z-5);
+          setrotateY(Z=>Z-5);
           break
 
         case 'r':
           setRotateX(0);
-          setRotateZ(0);
+          setrotateY(0);
           break;
         default:
           return
@@ -88,7 +88,7 @@ const [rotateZ, setRotateZ] = useState(0);
     (device: IEnviroment) => {
       return render({
         rotateX,
-        rotateZ,
+        rotateY,
         tx,
         ty,
         tz,
@@ -98,7 +98,7 @@ const [rotateZ, setRotateZ] = useState(0);
         imageBitMap 
       } as any)(device);
     },
-    [rotateX, rotateZ, tx, ty, tz, fov, zNear, zFar, imageBitMap]
+    [rotateX, rotateY, tx, ty, tz, fov, zNear, zFar, imageBitMap]
   );
 
   const [device, setDevice] = useState<IEnviroment>();
@@ -152,8 +152,9 @@ const [rotateZ, setRotateZ] = useState(0);
     ></canvas>
 
     <div className="text-white fixed left-10 top-10 bg-neutral-800 p-2 rounded-md">
-      <div>press 'w,s' to rotate in x-z</div>
+      <div>press 'w,s' to rotate towards you</div>
       <div>press 'a,d' to rotate in x-y plan</div> 
+      
     </div>
     
     </>

@@ -8,7 +8,7 @@ import { createPlan } from "./object/plan";
 
 export default function render({
   rotateX,
-  rotateZ,
+  rotateY,
   tx,
   ty,
   tz,
@@ -277,17 +277,24 @@ export default function render({
 
   //view matrix uniform
     const uniformBufferSize = 16 * 4;
-    const uniformBuffer = device.createBuffer({
+    const perspectiveBuffer = device.createBuffer({
       label: "uniform",
       size: uniformBufferSize,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
-    const uniformValues = new Float32Array(uniformBufferSize / 4);
+
+    const cameraBuffer = device.createBuffer({
+      label: "uniform",
+      size: uniformBufferSize,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
 
     const viewMatrixBindGroup = device.createBindGroup({
       label:'bind group for view',
       layout:pipeline.getBindGroupLayout(2),
-      entries:[{binding:0, resource:{buffer:uniformBuffer}}]
+      entries:[{binding:0, resource:{buffer:perspectiveBuffer }},
+              {binding:1, resource:{buffer:cameraBuffer}}
+      ]
     })
 
     const clearColor = { r: 0, g: 0, b: 0, a: 1.0 };
@@ -353,18 +360,25 @@ export default function render({
 
       //the sequence of scale, rotation and translate matters!
       matrixStack.scale([20,20,20]);
-      //camera rotation
-      matrixStack.rotateX(rotateX);
-      matrixStack.rotateZ(rotateZ);
       matrixStack.translate([tx, ty, tz]);
       //width/height
       const aspect = canvas.clientWidth / canvas.clientHeight;
       matrixStack.perspective(fov, aspect, zNear, zFar);
-      matrixStack.lookAt([0,0,500], [0, 0, -400], [0, 1, 0]);
+      const perspectiveValue = new Float32Array(matrixStack.getCurrMatrix());
+      device.queue.writeBuffer(perspectiveBuffer, 0, perspectiveValue);
+
+      const cameraMatrixStack = new MatrixStack();
+      //camera rotation
+      cameraMatrixStack.rotateY(rotateY);
+      cameraMatrixStack.rotateX(rotateX);
+     
+      cameraMatrixStack.lookAt([0,0,500], [0, 0, -400], [0, 1, 0]);
+
    
 
-      uniformValues.set(matrixStack.getCurrMatrix());
-      device.queue.writeBuffer(uniformBuffer, 0, uniformValues);
+      const cameraValue = new Float32Array(cameraMatrixStack.getCurrMatrix());
+      device.queue.writeBuffer(cameraBuffer, 0, cameraValue);
+
       pass.setBindGroup(2, viewMatrixBindGroup);  
       
       pass.setBindGroup(0, objectTypeBindGroup);

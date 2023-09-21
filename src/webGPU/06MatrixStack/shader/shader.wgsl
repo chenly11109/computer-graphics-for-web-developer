@@ -17,6 +17,7 @@ struct FS {
 @group(1) @binding(1) var samp: sampler;
 @group(1) @binding(2) var tex: texture_2d<f32>;
 @group(2) @binding(0) var<uniform> viewMatrix: mat4x4f;
+@group(2) @binding(1) var<uniform> cameraMatrix: mat4x4f;
 @group(3) @binding(0) var<uniform> fColor:vec4f;
 @group(3) @binding(1) var<uniform> objectMatrix: mat4x4f;
 
@@ -31,7 +32,7 @@ struct FS {
     vec2(0.0, 1.0),
   );
 
-    vsOut.position = viewMatrix*objectMatrix * vert.position;
+    vsOut.position =  viewMatrix *cameraMatrix  * objectMatrix * vert.position;
     vsOut.fragUV = uv[vert.vertexIndex ];
     return vsOut;
 }
