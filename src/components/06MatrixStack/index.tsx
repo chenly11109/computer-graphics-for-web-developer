@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 
-export default function MatrixStack(){
+export default function Basics(){
     return <section>
         <Link className="font-bold underline" to="/webgpu/06MatrixStack">Demo</Link>
         <h1 className="text-2xl">Implement a Stack in javascript</h1>

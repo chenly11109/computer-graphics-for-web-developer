@@ -54,3 +54,4 @@ export const getData3DIndices = (positions:number[],indices:number[])=>{
       indexData
     }
 }
+
