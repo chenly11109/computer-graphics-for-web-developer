@@ -5,11 +5,11 @@ import { useControls, folder } from "leva";
 import { IEnviroment } from "../interface";
 import { hexToRgb } from "../utils/hexToRgb";
 
-export default function DiffuseDemo() {
+export default function SpecularDemo() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [rotateY, setRotateX] = useState(0);
 
-  const {lightX, lightY, lightZ, lightColor:lightColorHex,objectColor: objectColorHex} = useControls({
+  const {lightX, lightY, lightZ, lightColor:lightColorHex,objectColor: objectColorHex, shininess} = useControls({
     light:folder({
       lightX:{
         min: -500,
@@ -29,10 +29,16 @@ export default function DiffuseDemo() {
         value: 0,
         step: 5,
       },
-      lightColor: { value: '#ffffff'}
+      lightColor: { value: 'gold'},
+      shininess:{
+        min: 5,
+        max: 100,
+        value: 40,
+        step: 5,
+      }
     }),
     object:folder({
-      objectColor:{value:'#ffffff'}
+      objectColor:{value:'black'}
     })
   })
 
@@ -58,9 +64,9 @@ export default function DiffuseDemo() {
   
   const renderFn = useCallback(
     (device: IEnviroment) => {
-      return render({ rotateY, lightX, lightY, lightZ, lightColor, objectColor })(device);
+      return render({ rotateY, lightX, lightY, lightZ, lightColor, objectColor,shininess })(device);
     },
-    [rotateY, lightX, lightY, lightZ, lightColor, objectColor]
+    [rotateY, lightX, lightY, lightZ, lightColor, objectColor,shininess]
   );
 
   const [device, setDevice] = useState<IEnviroment>();

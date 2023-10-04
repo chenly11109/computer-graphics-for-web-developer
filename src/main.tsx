@@ -20,7 +20,8 @@ import Transformation3DDemo from "./webGPU/03transformation3D";
 import PerspectiveDemo from "./webGPU/04Perspective";
 import CameraDemo from "./webGPU/05Camera";
 import MatrixStackDemo from "./webGPU/06MatrixStack";
-import LightBasicsDemo from "./webGPU/07Diffuse/index.tsx";
+import LightDiffuseDemo from "./webGPU/07Diffuse";
+import LightSpecularDemo from "./webGPU/08Specular"
 
 const router = createBrowserRouter(
   [
@@ -80,8 +81,8 @@ const router = createBrowserRouter(
         { path: "04perspective", element: <PerspectiveDemo /> },
         { path: "05camera", element: <CameraDemo /> },
         { path: "06MatrixStack", element: <MatrixStackDemo /> },
-
-        { path: "07Basics", element: <LightBasicsDemo /> },
+        { path: "07Basics", element: <LightDiffuseDemo /> },
+        { path: "08Specular", element: <LightSpecularDemo /> },
       ],
     },
   ],
