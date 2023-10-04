@@ -1,29 +1,66 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback,useMemo } from "react";
 import { defaultStart } from "../utils/defaultStart";
 import render from "./main";
-//import { useControls, folder } from "leva";
+import { useControls, folder } from "leva";
 import { IEnviroment } from "../interface";
-import { createPlanTexture } from "./object/plan";
+import { hexToRgb } from "../utils/hexToRgb";
 
 export default function MatrixStackDemo() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-const [rotateY, setRotateX] = useState(0);
+  const [rotateY, setRotateX] = useState(0);
 
-    const [imageBitMap, setImageBitMap] = useState<ImageBitmap>();
+  const {lightX, lightY, lightZ, lightColor:lightColorHex,objectColor: objectColorHex} = useControls({
+    light:folder({
+      lightX:{
+        min: -500,
+        max: 500,
+        value: 200,
+        step: 5,
+      },
+      lightY:{
+        min: -500,
+        max: 500,
+        value: 0,
+        step: 5,
+      },
+      lightZ:{
+        min: -500,
+        max: 500,
+        value: 0,
+        step: 5,
+      },
+      lightColor: { value: '#ffffff'}
+    }),
+    object:folder({
+      objectColor:{value:'#ffffff'}
+    })
+  })
 
-  const rotateInterval = useRef<number|null>(null);
-    useEffect(()=>{
-     rotateInterval.current = setInterval(()=>{
-      setRotateX(x=>x+5);
-     },100)
+  const lightColor = useMemo(() => hexToRgb(lightColorHex),[lightColorHex])
+  const objectColor = useMemo(()=>hexToRgb(objectColorHex),[objectColorHex])
 
-     return ()=>{if(rotateInterval.current)clearInterval(rotateInterval.current)};
-    },[])
+  useEffect(() => {
+    document.addEventListener("keydown", (e) => {
+      switch (e?.key) {
+        case "a":
+          setRotateX((Z) => Z + 5);
+          break;
+        case "d":
+          setRotateX((Z) => Z - 5);
+          break;
+        default:
+          return;
+      }
+    });
+  }, []);
+
+
+  
   const renderFn = useCallback(
     (device: IEnviroment) => {
-      return render({rotateY})(device);
+      return render({ rotateY, lightX, lightY, lightZ, lightColor, objectColor })(device);
     },
-    [rotateY]
+    [rotateY, lightX, lightY, lightZ, lightColor, objectColor]
   );
 
   const [device, setDevice] = useState<IEnviroment>();
@@ -33,7 +70,6 @@ const [rotateY, setRotateX] = useState(0);
       setDevice(device);
     });
 
-    createPlanTexture().then((image)=>setImageBitMap(image));
   }, [canvasRef]);
 
   const observerRef = useRef<ResizeObserver>();
@@ -44,7 +80,7 @@ const [rotateY, setRotateX] = useState(0);
     }
     //为了在刚开始渲染的时候，清晰度就足够
     observerRef.current = new ResizeObserver((entries) => {
-      if (!device || !imageBitMap) return;
+      if (!device ) return;
       for (const entry of entries) {
         const canvas = entry.target as HTMLCanvasElement;
         const width = entry.contentBoxSize[0].inlineSize;
@@ -65,18 +101,14 @@ const [rotateY, setRotateX] = useState(0);
   }, [device, renderFn]);
 
   useEffect(() => {
-    if (!device || !imageBitMap) return;
+    if (!device ) return;
     renderFn(device)();
-  }, [renderFn, device, imageBitMap]);
+  }, [renderFn, device]);
   return (
-  
-        <canvas
+    <canvas
       ref={canvasRef}
       id="canvas"
       className="bg-black w-screen h-screen"
     ></canvas>
-    
-
-
   );
 }
