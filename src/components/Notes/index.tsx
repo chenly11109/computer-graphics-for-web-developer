@@ -17,7 +17,7 @@ export default function Notes(){
     <div className="ml-5">
     <NavLink className={({isActive})=>isActive?"underline block font-bold":"block hover:underline"} to="07Diffuse">Diffuse</NavLink>
     <NavLink className={({isActive})=>isActive?"underline block font-bold":"block hover:underline"} to="08Specular">Specular</NavLink>
-    <NavLink className={({isActive})=>isActive?"underline block font-bold":"block hover:underline"} to="09Light_Source">Light Source</NavLink>
+    <NavLink className={({isActive})=>isActive?"underline block font-bold":"block hover:underline"} to="09LightSource">Light Source</NavLink>
     </div>
 </section>
         <Outlet />

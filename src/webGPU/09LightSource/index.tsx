@@ -5,7 +5,7 @@ import { useControls, folder } from "leva";
 import { IEnviroment } from "../interface";
 import { hexToRgb } from "../utils/hexToRgb";
 
-export default function SpecularDemo() {
+export default function LightSourceDemo() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [rotateY, setRotateX] = useState(0);
 
@@ -30,16 +30,15 @@ export default function SpecularDemo() {
         step: 5,
       },
       lightColor: { value: 'gold'},
-     
-    }),
-    object:folder({
-      objectColor:{value:'black'},
       shininess:{
         min: 5,
-        max: 300,
+        max: 100,
         value: 40,
         step: 5,
       }
+    }),
+    object:folder({
+      objectColor:{value:'black'}
     })
   })
 

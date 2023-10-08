@@ -6,7 +6,7 @@ export default function Diffuse(){
         <h2 className="text-2xl">Load Model(obj)</h2>
         <h1 className="text-2xl">light origin</h1>
         <h2 className="text-xl">normal</h2>
-        <h1 className="text-2xl">interpolation</h1>
+        <h1 className="text-2xl">interpolation(fragment pos & normal)</h1>
     
  
 

@@ -11,8 +11,9 @@ import Transformation3D from "./components/03Transformation3D";
 import Perspective from "./components/04Perspective";
 import Camera from "./components/05Camera";
 import MatrixStack from "./components/06MatrixStack";
-import Diffuse from "./components/07Diffuse/index.tsx";
-import Specular from "./components/08Specular/index.tsx";
+import Diffuse from "./components/07Diffuse";
+import Specular from "./components/08Specular";
+import LightSource from "./components/09LightSource";
 
 import BasicsDemo from "./webGPU/01basics";
 import Transformation2DDemo from "./webGPU/02transformation";
@@ -22,6 +23,7 @@ import CameraDemo from "./webGPU/05Camera";
 import MatrixStackDemo from "./webGPU/06MatrixStack";
 import LightDiffuseDemo from "./webGPU/07Diffuse";
 import LightSpecularDemo from "./webGPU/08Specular"
+import LightSourceDemo from "./webGPU/09LightSource/index.tsx";
 
 const router = createBrowserRouter(
   [
@@ -66,6 +68,10 @@ const router = createBrowserRouter(
           path: "08Specular",
           element: <Specular />,
         },
+        {
+          path: "09LightSource",
+          element: <LightSource/>,
+        },
       ],
     },
     {
@@ -83,6 +89,7 @@ const router = createBrowserRouter(
         { path: "06MatrixStack", element: <MatrixStackDemo /> },
         { path: "07Basics", element: <LightDiffuseDemo /> },
         { path: "08Specular", element: <LightSpecularDemo /> },
+        { path: "09LightSource", element: <LightSourceDemo /> },
       ],
     },
   ],
