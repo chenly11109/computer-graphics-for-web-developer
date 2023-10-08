@@ -9,7 +9,7 @@ export default function LightSourceDemo() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [rotateY, setRotateX] = useState(0);
 
-  const {lightX, lightY, lightZ, lightColor:lightColorHex,objectColor: objectColorHex, shininess} = useControls({
+  const {lightX, lightY, lightZ, lightColor:lightColorHex,objectColor: objectColorHex, shininess, attenuation} = useControls({
     light:folder({
       lightX:{
         min: -500,
@@ -30,15 +30,21 @@ export default function LightSourceDemo() {
         step: 5,
       },
       lightColor: { value: 'gold'},
+      attenuation:{
+        min:100,
+        max:300,
+        value:200,
+        step:5
+      }
+    }),
+    object:folder({
+      objectColor:{value:'purple'},
       shininess:{
         min: 5,
         max: 100,
         value: 40,
         step: 5,
       }
-    }),
-    object:folder({
-      objectColor:{value:'black'}
     })
   })
 
@@ -64,9 +70,9 @@ export default function LightSourceDemo() {
   
   const renderFn = useCallback(
     (device: IEnviroment) => {
-      return render({ rotateY, lightX, lightY, lightZ, lightColor, objectColor,shininess })(device);
+      return render({ rotateY, lightX, lightY, lightZ, lightColor, objectColor,shininess, attenuation })(device);
     },
-    [rotateY, lightX, lightY, lightZ, lightColor, objectColor,shininess]
+    [rotateY, lightX, lightY, lightZ, lightColor, objectColor,shininess, attenuation]
   );
 
   const [device, setDevice] = useState<IEnviroment>();

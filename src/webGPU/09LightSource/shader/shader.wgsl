@@ -22,6 +22,7 @@ struct FInput {
 @group(2) @binding(0) var<uniform> lColor:vec4f;
 @group(2) @binding(1) var<uniform> lightPosition: mat4x4f;
 @group(2) @binding(2) var<uniform> shininess: f32;
+@group(2) @binding(3) var<uniform> attenuation: f32;
 
 
 @vertex fn vs(vert: Vertex)->VSOutput{
@@ -33,12 +34,13 @@ struct FInput {
 }
 
 @fragment fn fs(fInput : FInput)->@location(0) vec4f{
-    var to_light: vec4f;
+var to_light: vec4f;
     var reflection: vec4f;
-
     var cos_angle: f32;
     var specular_color : vec4f;
-    var object_color:vec4f;
+    var ambient_color : vec4f;
+    var diffuse_color : vec4f;
+
     var to_camera:vec4f;
     var fColor : vec4f;
 
@@ -49,11 +51,21 @@ struct FInput {
     cos_angle = dot(reflection, to_camera);
     cos_angle = clamp(cos_angle, 0.0, 1.0);
     cos_angle = pow(cos_angle, shininess);
-
-    object_color = sColor * (1-cos_angle);
-
     specular_color = lColor * cos_angle;
-    fColor = specular_color + object_color;
+ 
+    cos_angle = dot(fInput.fragNorm, to_light);
+    cos_angle = clamp(cos_angle, 0.0, 1.0);
+    diffuse_color = sColor * cos_angle;
+
+    ambient_color = lColor * sColor;
+
+    var distance : f32;
+    var attenuationFactor : f32;
+    distance = length(to_light);
+    attenuationFactor = clamp(attenuation / distance, 0.0, 1.0);
+
+
+    fColor = attenuationFactor * (ambient_color + diffuse_color + specular_color);
 
     return fColor;
 }

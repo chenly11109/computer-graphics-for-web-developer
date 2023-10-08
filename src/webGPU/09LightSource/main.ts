@@ -4,14 +4,15 @@ import lightShader from "./shader/lightShader.wgsl?raw";
 import { IEnviroment } from "../interface";
 import { MatrixStack } from "../utils/stack";
 import { createSphere } from "../utils/sphere";
-export default function render({ rotateY, lightX, lightZ, lightY, lightColor, objectColor,shininess }: {
+export default function render({ rotateY, lightX, lightZ, lightY, lightColor, objectColor,shininess, attenuation }: {
   lightColor:number[],
   objectColor:number[],
   rotateY: number,
   lightX:number,
   lightZ:number,
   lightY:number,
-  shininess:number
+  shininess:number,
+  attenuation:number
 }) {
   return function ({
     device,
@@ -116,13 +117,22 @@ export default function render({ rotateY, lightX, lightZ, lightY, lightColor, ob
         usage:GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
     })
     device.queue.writeBuffer(lightShininessBuffer, 0, new Float32Array([shininess]))
+
+    const attenuationBuffer = device.createBuffer({
+      label:'light attenuation buffer',
+      size:16,
+      usage:GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+  })
+    device.queue.writeBuffer(attenuationBuffer, 0, new Float32Array([attenuation]))
+
     const lightBindGroupMain = device.createBindGroup({
       label: 'bind group for light',
       layout: pipeline.getBindGroupLayout(2),
       entries: [
       {binding:0, resource:{buffer:lightColorBuffer}},
       {binding:1, resource:{buffer:lightMatrixBuffer}},
-      {binding:2, resource:{buffer:lightShininessBuffer}}
+      {binding:2, resource:{buffer:lightShininessBuffer}},
+      {binding:3, resource:{buffer:attenuationBuffer}}
       ]
     })
 
