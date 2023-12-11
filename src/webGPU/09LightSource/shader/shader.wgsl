@@ -34,7 +34,7 @@ struct FInput {
 }
 
 @fragment fn fs(fInput : FInput)->@location(0) vec4f{
-var to_light: vec4f;
+    var to_light: vec4f;
     var reflection: vec4f;
     var cos_angle: f32;
     var specular_color : vec4f;
@@ -44,7 +44,11 @@ var to_light: vec4f;
     var to_camera:vec4f;
     var fColor : vec4f;
 
-    to_light = normalize(lightPosition * vec4f(0,0,0,1) - fInput.fragPos);
+    to_light = lightPosition * vec4f(0,0,0,1) - fInput.fragPos;
+
+    var distance : f32;
+    distance = length(to_light);
+    to_light = normalize(to_light);
     reflection = normalize(2 * dot(fInput.fragNorm, to_light) * fInput.fragNorm - to_light);
     to_camera = normalize(fInput.fragPos);
 
@@ -58,14 +62,10 @@ var to_light: vec4f;
     diffuse_color = sColor * cos_angle;
 
     ambient_color = lColor * sColor;
-
-    var distance : f32;
     var attenuationFactor : f32;
-    distance = length(to_light);
     attenuationFactor = clamp(attenuation / distance, 0.0, 1.0);
 
-
-    fColor = attenuationFactor * (ambient_color + diffuse_color + specular_color);
+    fColor = vec4(attenuationFactor * (ambient_color + diffuse_color + specular_color).rgb, sColor.a);
 
     return fColor;
 }
