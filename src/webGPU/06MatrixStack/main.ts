@@ -16,7 +16,7 @@ export default function render({
   zNear,
   zFar,
   imageBitMap
-}: {imageBitMap:ImageBitmap } & { [key: string]: number }) {
+}: { imageBitMap: ImageBitmap } & { [key: string]: number }) {
 
   return function ({
     device,
@@ -64,30 +64,32 @@ export default function render({
 
     //object type 1 = cubic & teapot
     const objectTypeBuffer = device.createBuffer({
-      label:'object type buffer1',
-      size:objectTypeBufferSize,
-      usage:GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+      label: 'object type buffer1',
+      size: objectTypeBufferSize,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
     })
-    const objectTypeBindGroup =   device.createBindGroup({
-      label:'bind group for teapot type',
-      layout:pipeline.getBindGroupLayout(0),
-      entries:[{
-        binding:0, resource:{buffer:objectTypeBuffer}
-      }]})
+    const objectTypeBindGroup = device.createBindGroup({
+      label: 'bind group for teapot type',
+      layout: pipeline.getBindGroupLayout(0),
+      entries: [{
+        binding: 0, resource: { buffer: objectTypeBuffer }
+      }]
+    })
     device.queue.writeBuffer(objectTypeBuffer, 0, new Uint32Array([1]));
 
 
-      // object type 0 = plan
-      const objectTypeBuffer2 = device.createBuffer({
-        label:'object type buffer2',
-        size:objectTypeBufferSize,
-        usage:GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
-      })
-      const objectType2BindGroup =   device.createBindGroup({
-        label:'bind group for plan type',
-        layout:pipeline.getBindGroupLayout(0),
-        entries:[{binding:0, resource:{buffer:objectTypeBuffer2}}]})
-      device.queue.writeBuffer(objectTypeBuffer2, 0, new Uint32Array([0]));
+    // object type 0 = plan
+    const objectTypeBuffer2 = device.createBuffer({
+      label: 'object type buffer2',
+      size: objectTypeBufferSize,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+    })
+    const objectType2BindGroup = device.createBindGroup({
+      label: 'bind group for plan type',
+      layout: pipeline.getBindGroupLayout(0),
+      entries: [{ binding: 0, resource: { buffer: objectTypeBuffer2 } }]
+    })
+    device.queue.writeBuffer(objectTypeBuffer2, 0, new Uint32Array([0]));
 
 
     //objectInfo - cubic*4 + teapot
@@ -96,137 +98,138 @@ export default function render({
     //attrBindgroup (color, viewMatrix)
     //transformMatrix
     const objects1Info: { vertexBuffer: GPUBuffer; indexBuffer: GPUBuffer; numIndices: number; attrBindGroup: GPUBindGroup; }[] = [];
-    const colorBufferSize = 16 ;
-    const transformBufferSize = 16*4;
+    const colorBufferSize = 16;
+    const transformBufferSize = 16 * 4;
 
     //teapot 
-    const {vertexData:teapotVertexData, indexData:teapotIndexData,numIndices:teapotNumIndices} = createTeapot();
+    const { vertexData: teapotVertexData, indexData: teapotIndexData, numIndices: _ } = createTeapot();
     const teapotVertexBuffer = device.createBuffer({
-      label:'teapot vertices',
-      size:teapotVertexData.byteLength,
-      usage:GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
+      label: 'teapot vertices',
+      size: teapotVertexData.byteLength,
+      usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
     })
     device.queue.writeBuffer(teapotVertexBuffer, 0, teapotVertexData);
 
     const teapotIndexBuffer = device.createBuffer({
-      label:'teapot indices',
-      size:teapotIndexData.byteLength,
-      usage:GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
+      label: 'teapot indices',
+      size: teapotIndexData.byteLength,
+      usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
     })
     device.queue.writeBuffer(teapotIndexBuffer, 0, teapotIndexData);
 
     const teapotColorBuffer = device.createBuffer({
-      label:'teapot color buffer',
-      size:colorBufferSize,
-      usage:GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+      label: 'teapot color buffer',
+      size: colorBufferSize,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
     })
-    const teapotColorValue = new Float32Array([0,1,1,1]);
+    const teapotColorValue = new Float32Array([0, 1, 1, 1]);
     device.queue.writeBuffer(teapotColorBuffer, 0, teapotColorValue);
 
     const teapotTransformBuffer = device.createBuffer({
-      label:'teapot transform buffer',
-      size:transformBufferSize,
-      usage:GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+      label: 'teapot transform buffer',
+      size: transformBufferSize,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
     })
     const teapotMatrixStack = new MatrixStack();
-    const teapotTransformValue = new Float32Array( teapotMatrixStack.getCurrMatrix());
+    const teapotTransformValue = new Float32Array(teapotMatrixStack.getCurrMatrix());
     device.queue.writeBuffer(teapotTransformBuffer, 0, teapotTransformValue);
 
     const teapotBindGroup = device.createBindGroup({
       label: 'bind group for teapot',
       layout: pipeline.getBindGroupLayout(3),
       entries: [
-        { binding: 0, resource: { buffer: teapotColorBuffer }},
-        { binding: 1, resource: { buffer: teapotTransformBuffer }},
+        { binding: 0, resource: { buffer: teapotColorBuffer } },
+        { binding: 1, resource: { buffer: teapotTransformBuffer } },
       ],
     });
-  
+
     objects1Info.push({
-      vertexBuffer:teapotVertexBuffer, 
-      indexBuffer:teapotIndexBuffer, 
-      numIndices: teapotNumIndices, 
-      attrBindGroup:teapotBindGroup
+      vertexBuffer: teapotVertexBuffer,
+      indexBuffer: teapotIndexBuffer,
+      numIndices: teapotNumIndices,
+      attrBindGroup: teapotBindGroup
     })
-  
-  //cubics * 4
-  const {cubicIndexData,cubicNumIndices,cubicVertexData} = createCubicIndices();
-  const cubicVertexBuffer = device.createBuffer({
-      label:'cubic vertices',
-      size:cubicVertexData.byteLength,
-      usage:GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
+
+    //cubics * 4
+    const { cubicIndexData, cubicNumIndices, cubicVertexData } = createCubicIndices();
+    const cubicVertexBuffer = device.createBuffer({
+      label: 'cubic vertices',
+      size: cubicVertexData.byteLength,
+      usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
     })
     device.queue.writeBuffer(cubicVertexBuffer, 0, cubicVertexData);
-  const cubicIndexBuffer = device.createBuffer({
-      label:'cubic indices',
-      size:cubicIndexData.byteLength,
-      usage:GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
+    const cubicIndexBuffer = device.createBuffer({
+      label: 'cubic indices',
+      size: cubicIndexData.byteLength,
+      usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
     })
-  device.queue.writeBuffer(cubicIndexBuffer, 0, cubicIndexData);
+    device.queue.writeBuffer(cubicIndexBuffer, 0, cubicIndexData);
 
-  [0,1,2,3].forEach(index=>{
-    const cubicTransformBuffer = device.createBuffer({
-      label:'cubic transform buffer',
-      size:transformBufferSize,
-      usage:GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
-    })
-    const cubicMatrixStack = new MatrixStack();
-    cubicMatrixStack.translate([(index % 2 - 0.5) * 10,1, (Math.floor(index/2)-0.5)*10])
-    cubicMatrixStack.scale([0.2,1,0.2]);
-    const cubicTransformValue = new Float32Array( cubicMatrixStack.getCurrMatrix());
-    device.queue.writeBuffer(cubicTransformBuffer, 0, cubicTransformValue);
+    [0, 1, 2, 3].forEach(index => {
+      const cubicTransformBuffer = device.createBuffer({
+        label: 'cubic transform buffer',
+        size: transformBufferSize,
+        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+      })
+      const cubicMatrixStack = new MatrixStack();
+      cubicMatrixStack.translate([(index % 2 - 0.5) * 10, 1, (Math.floor(index / 2) - 0.5) * 10])
+      cubicMatrixStack.scale([0.2, 1, 0.2]);
+      const cubicTransformValue = new Float32Array(cubicMatrixStack.getCurrMatrix());
+      device.queue.writeBuffer(cubicTransformBuffer, 0, cubicTransformValue);
 
 
-    const cubicColorBuffer = device.createBuffer({
-      label:'teapot color buffer',
-      size:colorBufferSize,
-      usage:GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
-    })
-    const cubicColorValue = new Float32Array([1-0.3*index,0,0.3*index,1]);
-    device.queue.writeBuffer(cubicColorBuffer, 0, cubicColorValue);
+      const cubicColorBuffer = device.createBuffer({
+        label: 'teapot color buffer',
+        size: colorBufferSize,
+        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+      })
+      const cubicColorValue = new Float32Array([1 - 0.3 * index, 0, 0.3 * index, 1]);
+      device.queue.writeBuffer(cubicColorBuffer, 0, cubicColorValue);
 
-    const cubicBindGroup = device.createBindGroup({
-      label: 'bind group for cubic',
-      layout: pipeline.getBindGroupLayout(3),
-      entries: [
-        { binding: 0, resource: { buffer: cubicColorBuffer }},
-        { binding: 1, resource: { buffer: cubicTransformBuffer }},
-      ],
-    });
-  
-    objects1Info.push({
-      vertexBuffer:cubicVertexBuffer, 
-      indexBuffer:cubicIndexBuffer, 
-      numIndices: cubicNumIndices, 
-      attrBindGroup:cubicBindGroup
-    })
-  })
-   
+      const cubicBindGroup = device.createBindGroup({
+        label: 'bind group for cubic',
+        layout: pipeline.getBindGroupLayout(3),
+        entries: [
+          { binding: 0, resource: { buffer: cubicColorBuffer } },
+          { binding: 1, resource: { buffer: cubicTransformBuffer } },
+        ],
+      });
 
-  //plan
-  const {planNumIndices, planVertexData, planIndexData} = createPlan();
-  const planVertexBuffer = device.createBuffer({
-      label:'plan vertices',
-      size:planVertexData.byteLength,
-      usage:GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
-    })
-  const planIndexBuffer = device.createBuffer({
-      label:'plan index',
-      size:planIndexData.byteLength,
-      usage:GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
+      objects1Info.push({
+        vertexBuffer: cubicVertexBuffer,
+        indexBuffer: cubicIndexBuffer,
+        numIndices: cubicNumIndices,
+        attrBindGroup: cubicBindGroup
+      })
     })
 
-    device.queue.writeBuffer(planVertexBuffer, 0 , planVertexData);
+
+
+    //cubic
+    const { cubicIndexData, cubicNumIndices, cubicVertexData } = createCubicIndices();
+    const cubicVertexBuffer = device.createBuffer({
+      label: 'cubic vertices',
+      size: cubicVertexData.byteLength,
+      usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
+    })
+    const cubicIndexBuffer = device.createBuffer({
+      label: 'cubic indices',
+      size: cubicIndexData.byteLength,
+      usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
+    })
+
+    device.queue.writeBuffer(planVertexBuffer, 0, planVertexData);
     device.queue.writeBuffer(planIndexBuffer, 0, planIndexData);
-   
 
 
-  //planTexture
-  const planTexture = device.createTexture({
-      size:[imageBitMap.width, imageBitMap.height, 1],
-      format:'rgba8unorm',
-      usage:GPUTextureUsage.TEXTURE_BINDING |
-      GPUTextureUsage.COPY_DST |
-      GPUTextureUsage.RENDER_ATTACHMENT,
+
+    //planTexture
+    const planTexture = device.createTexture({
+      size: [imageBitMap.width, imageBitMap.height, 1],
+      format: 'rgba8unorm',
+      usage: GPUTextureUsage.TEXTURE_BINDING |
+        GPUTextureUsage.COPY_DST |
+        GPUTextureUsage.RENDER_ATTACHMENT,
     })
     device.queue.copyExternalImageToTexture(
       { source: imageBitMap },
@@ -234,48 +237,49 @@ export default function render({
       [imageBitMap.width, imageBitMap.height]
     );
 
-  
-  const samplerDescriptor : GPUSamplerDescriptor = {
+
+    const samplerDescriptor: GPUSamplerDescriptor = {
       addressModeU: 'clamp-to-edge',
       addressModeV: 'clamp-to-edge',
       magFilter: 'nearest',
       minFilter: 'nearest',
     }
- 
-
-  const sampler = device.createSampler(samplerDescriptor);
 
 
-  const textureBindGroup = device.createBindGroup({
-    label: "bind group for texture",
-    layout: pipeline.getBindGroupLayout(1),
-    entries: [
-              {binding:1, resource:sampler},
-              {binding:2, resource:planTexture.createView()}
-    ],
-  });
-
-  const planTransformBuffer = device.createBuffer({
-    label:'teapot transform buffer',
-    size:transformBufferSize,
-    usage:GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
-  })
-  const planMatrixStack = new MatrixStack();
-  planMatrixStack.scale([3,3,3])
-  const planTransformValue = new Float32Array( planMatrixStack.getCurrMatrix());
-  device.queue.writeBuffer(planTransformBuffer, 0, planTransformValue);
-
-  const planBindGroup = device.createBindGroup({
-    label: 'bind group for plan',
-    layout: pipeline.getBindGroupLayout(3),
-    entries: [
-      { binding: 0, resource: { buffer: teapotColorBuffer }},
-      { binding: 1, resource: { buffer: planTransformBuffer }},
-    ],
-  });
+    const sampler = device.createSampler(samplerDescriptor);
 
 
-  //view matrix uniform
+    const textureBindGroup = device.createBindGroup({
+      label: "bind group for texture",
+      layout: pipeline.getBindGroupLayout(1),
+      entries: [
+        { binding: 1, resource: sampler },
+        { binding: 2, resource: planTexture.createView() }
+      ],
+    });
+
+    const planTransformBuffer = device.createBuffer({
+      label: 'teapot transform buffer',
+      size: transformBufferSize,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+    })
+    const planMatrixStack = new MatrixStack();
+    planMatrixStack.scale([3, 3, 3])
+    const planTransformValue = new Float32Array(planMatrixStack.getCurrMatrix());
+    device.queue.writeBuffer(planTransformBuffer, 0, planTransformValue);
+
+    const planBindGroup = device.createBindGroup({
+      label: 'bind group for plan',
+      layout: pipeline.getBindGroupLayout(3),
+      entries: [
+        { binding: 0, resource: { buffer: teapotColorBuffer } },
+        { binding: 1, resource: { buffer: planTransformBuffer } },
+      ],
+    });
+
+
+
+    //view matrix uniform
     const uniformBufferSize = 16 * 4;
     const perspectiveBuffer = device.createBuffer({
       label: "uniform",
@@ -290,10 +294,10 @@ export default function render({
     });
 
     const viewMatrixBindGroup = device.createBindGroup({
-      label:'bind group for view',
-      layout:pipeline.getBindGroupLayout(2),
-      entries:[{binding:0, resource:{buffer:perspectiveBuffer }},
-              {binding:1, resource:{buffer:cameraBuffer}}
+      label: 'bind group for view',
+      layout: pipeline.getBindGroupLayout(2),
+      entries: [{ binding: 0, resource: { buffer: perspectiveBuffer } },
+      { binding: 1, resource: { buffer: cameraBuffer } }
       ]
     })
 
@@ -359,7 +363,7 @@ export default function render({
 
 
       //the sequence of scale, rotation and translate matters!
-      matrixStack.scale([20,20,20]);
+      matrixStack.scale([20, 20, 20]);
       matrixStack.translate([tx, ty, tz]);
       //width/height
       const aspect = canvas.clientWidth / canvas.clientHeight;
@@ -371,20 +375,20 @@ export default function render({
       //camera rotation
       cameraMatrixStack.rotateY(rotateY);
       cameraMatrixStack.rotateX(rotateX);
-     
-      cameraMatrixStack.lookAt([0,0,500], [0, 0, -400], [0, 1, 0]);
 
-   
+      cameraMatrixStack.lookAt([0, 0, 500], [0, 0, -400], [0, 1, 0]);
+
+
 
       const cameraValue = new Float32Array(cameraMatrixStack.getCurrMatrix());
       device.queue.writeBuffer(cameraBuffer, 0, cameraValue);
 
-      pass.setBindGroup(2, viewMatrixBindGroup);  
-      
+      pass.setBindGroup(2, viewMatrixBindGroup);
+
       pass.setBindGroup(0, objectTypeBindGroup);
-      objects1Info.forEach(({vertexBuffer,indexBuffer,numIndices,attrBindGroup})=>{
+      objects1Info.forEach(({ vertexBuffer, indexBuffer, numIndices, attrBindGroup }) => {
         pass.setBindGroup(3, attrBindGroup);
-        pass.setVertexBuffer(0,vertexBuffer);
+        pass.setVertexBuffer(0, vertexBuffer);
         pass.setIndexBuffer(indexBuffer, "uint16");
         pass.drawIndexed(numIndices)
       })
