@@ -102,7 +102,7 @@ export default function render({
     const transformBufferSize = 16 * 4;
 
     //teapot 
-    const { vertexData: teapotVertexData, indexData: teapotIndexData, numIndices: _ } = createTeapot();
+    const { vertexData: teapotVertexData, indexData: teapotIndexData, numIndices: teapotNumIndices } = createTeapot();
     const teapotVertexBuffer = device.createBuffer({
       label: 'teapot vertices',
       size: teapotVertexData.byteLength,
@@ -204,17 +204,16 @@ export default function render({
     })
 
 
-
-    //cubic
-    const { cubicIndexData, cubicNumIndices, cubicVertexData } = createCubicIndices();
-    const cubicVertexBuffer = device.createBuffer({
-      label: 'cubic vertices',
-      size: cubicVertexData.byteLength,
+    //plan
+    const { planNumIndices, planVertexData, planIndexData } = createPlan();
+    const planVertexBuffer = device.createBuffer({
+      label: 'plan vertices',
+      size: planVertexData.byteLength,
       usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
     })
-    const cubicIndexBuffer = device.createBuffer({
-      label: 'cubic indices',
-      size: cubicIndexData.byteLength,
+    const planIndexBuffer = device.createBuffer({
+      label: 'plan index',
+      size: planIndexData.byteLength,
       usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
     })
 
@@ -276,7 +275,6 @@ export default function render({
         { binding: 1, resource: { buffer: planTransformBuffer } },
       ],
     });
-
 
 
     //view matrix uniform

@@ -70,7 +70,7 @@ const router = createBrowserRouter(
         },
         {
           path: "09LightSource",
-          element: <LightSource/>,
+          element: <LightSource />,
         },
       ],
     },
