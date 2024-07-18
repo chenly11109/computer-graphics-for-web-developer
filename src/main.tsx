@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 
 import Notes from "./components/Notes";
+import Introduction from './components/Introduction.tsx'
 import Basics from "./components/01Basics";
 import Transformation2D from "./components/02Transformation";
 import Transformation3D from "./components/03Transformation3D";
@@ -29,12 +29,12 @@ const router = createBrowserRouter(
   [
     {
       path: "/",
-      element: <App />,
-    },
-    {
-      path: "notes/",
       element: <Notes />,
       children: [
+        {
+          path: "/",
+          element: <Introduction />
+        },
         {
           path: "01basics",
           element: <Basics />,
