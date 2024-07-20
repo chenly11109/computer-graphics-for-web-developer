@@ -4,10 +4,10 @@ import { InlineMath } from 'react-katex';
 
 export default function Transformation2D() {
     return (
-        <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-white shadow-md rounded-lg">
+        <section className="max-w-4xl pb-4 mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-white shadow-md rounded-lg">
             <h1 className="text-3xl font-semibold text-gray-900 my-4">Transformation 2D</h1>
             <Link className="text-blue-500 hover:text-blue-700 font-semibold underline" to="/webgpu/02transformation2D">
-                Check out the Demo
+                Demo
             </Link>
             <p className="text-gray-600 mt-2">Explore the demo link and locate the corresponding code example in the WebGPU folder 😉.</p>
             <p className="text-gray-600 mt-2"> set up and render a simple 2D square using WebGPU, managing shaders, buffers, and transformations based on input parameters to display the square with specified scaling, translation, and rotation.</p>

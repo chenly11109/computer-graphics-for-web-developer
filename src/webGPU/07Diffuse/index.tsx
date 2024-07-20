@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback,useMemo } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { defaultStart } from "../utils/defaultStart";
 import render from "./main";
 import { useControls, folder } from "leva";
@@ -9,35 +9,35 @@ export default function DiffuseDemo() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [rotateY, setRotateX] = useState(0);
 
-  const {lightX, lightY, lightZ, lightColor:lightColorHex,objectColor: objectColorHex} = useControls({
-    light:folder({
-      lightX:{
+  const { lightX, lightY, lightZ, lightColor: lightColorHex, objectColor: objectColorHex } = useControls({
+    light: folder({
+      lightX: {
         min: -500,
         max: 500,
         value: 200,
         step: 5,
       },
-      lightY:{
+      lightY: {
         min: -500,
         max: 500,
         value: 0,
         step: 5,
       },
-      lightZ:{
+      lightZ: {
         min: -500,
         max: 500,
         value: 0,
         step: 5,
       },
-      lightColor: { value: '#ffffff'}
+      lightColor: { value: 'yellow' }
     }),
-    object:folder({
-      objectColor:{value:'#ffffff'}
+    object: folder({
+      objectColor: { value: 'red' }
     })
   })
 
-  const lightColor = useMemo(() => hexToRgb(lightColorHex),[lightColorHex])
-  const objectColor = useMemo(()=>hexToRgb(objectColorHex),[objectColorHex])
+  const lightColor = useMemo(() => hexToRgb(lightColorHex), [lightColorHex])
+  const objectColor = useMemo(() => hexToRgb(objectColorHex), [objectColorHex])
 
   useEffect(() => {
     document.addEventListener("keydown", (e) => {
@@ -55,7 +55,7 @@ export default function DiffuseDemo() {
   }, []);
 
 
-  
+
   const renderFn = useCallback(
     (device: IEnviroment) => {
       return render({ rotateY, lightX, lightY, lightZ, lightColor, objectColor })(device);
@@ -80,7 +80,7 @@ export default function DiffuseDemo() {
     }
     //为了在刚开始渲染的时候，清晰度就足够
     observerRef.current = new ResizeObserver((entries) => {
-      if (!device ) return;
+      if (!device) return;
       for (const entry of entries) {
         const canvas = entry.target as HTMLCanvasElement;
         const width = entry.contentBoxSize[0].inlineSize;
@@ -101,7 +101,7 @@ export default function DiffuseDemo() {
   }, [device, renderFn]);
 
   useEffect(() => {
-    if (!device ) return;
+    if (!device) return;
     renderFn(device)();
   }, [renderFn, device]);
   return (

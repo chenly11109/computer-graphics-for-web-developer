@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback,useMemo } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { defaultStart } from "../utils/defaultStart";
 import render from "./main";
 import { useControls, folder } from "leva";
@@ -9,37 +9,37 @@ export default function LightSourceDemo() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [rotateY, setRotateX] = useState(0);
 
-  const {lightX, lightY, lightZ, lightColor:lightColorHex,objectColor: objectColorHex, shininess, attenuation} = useControls({
-    light:folder({
-      lightX:{
+  const { lightX, lightY, lightZ, lightColor: lightColorHex, objectColor: objectColorHex, shininess, attenuation } = useControls({
+    light: folder({
+      lightX: {
         min: -500,
         max: 500,
         value: 200,
         step: 5,
       },
-      lightY:{
+      lightY: {
         min: -500,
         max: 500,
         value: 0,
         step: 5,
       },
-      lightZ:{
+      lightZ: {
         min: -500,
         max: 500,
         value: 0,
         step: 5,
       },
-      lightColor: { value: 'gold'},
-      attenuation:{
-        min:100,
-        max:300,
-        value:200,
-        step:5
+      lightColor: { value: 'gold' },
+      attenuation: {
+        min: 100,
+        max: 300,
+        value: 200,
+        step: 5
       }
     }),
-    object:folder({
-      objectColor:{value:'purple'},
-      shininess:{
+    object: folder({
+      objectColor: { value: 'purple' },
+      shininess: {
         min: 5,
         max: 100,
         value: 40,
@@ -48,8 +48,8 @@ export default function LightSourceDemo() {
     })
   })
 
-  const lightColor = useMemo(() => hexToRgb(lightColorHex),[lightColorHex])
-  const objectColor = useMemo(()=>hexToRgb(objectColorHex),[objectColorHex])
+  const lightColor = useMemo(() => hexToRgb(lightColorHex), [lightColorHex])
+  const objectColor = useMemo(() => hexToRgb(objectColorHex), [objectColorHex])
 
   useEffect(() => {
     document.addEventListener("keydown", (e) => {
@@ -67,12 +67,12 @@ export default function LightSourceDemo() {
   }, []);
 
 
-  
+
   const renderFn = useCallback(
     (device: IEnviroment) => {
-      return render({ rotateY, lightX, lightY, lightZ, lightColor, objectColor,shininess, attenuation })(device);
+      return render({ rotateY, lightX, lightY, lightZ, lightColor, objectColor, shininess, attenuation })(device);
     },
-    [rotateY, lightX, lightY, lightZ, lightColor, objectColor,shininess, attenuation]
+    [rotateY, lightX, lightY, lightZ, lightColor, objectColor, shininess, attenuation]
   );
 
   const [device, setDevice] = useState<IEnviroment>();
@@ -92,7 +92,7 @@ export default function LightSourceDemo() {
     }
     //为了在刚开始渲染的时候，清晰度就足够
     observerRef.current = new ResizeObserver((entries) => {
-      if (!device ) return;
+      if (!device) return;
       for (const entry of entries) {
         const canvas = entry.target as HTMLCanvasElement;
         const width = entry.contentBoxSize[0].inlineSize;
@@ -113,7 +113,7 @@ export default function LightSourceDemo() {
   }, [device, renderFn]);
 
   useEffect(() => {
-    if (!device ) return;
+    if (!device) return;
     renderFn(device)();
   }, [renderFn, device]);
   return (

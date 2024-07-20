@@ -16,8 +16,18 @@ function App() {
                     <a
                         className="mx-2 text-blue-500 hover:text-blue-700 font-semibold underline"
                         href="https://www.edx.org/learn/computer-graphics/the-university-of-california-san-diego-computer-graphics">CSE 167</a>
+
+                    &
+                    <a
+                        className="mx-2 text-blue-500 hover:text-blue-700 font-semibold underline"
+                        href='https://webgpufundamentals.org/webgpu/lessons/webgpu-fundamentals.html'
+                    >WebGPU Tutorial</a>
+
                     . No need for C++, C, or any related language requirements.
                 </p>
+
+
+
             </header>
 
             <div>

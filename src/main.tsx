@@ -87,7 +87,7 @@ const router = createBrowserRouter(
         { path: "04perspective", element: <PerspectiveDemo /> },
         { path: "05camera", element: <CameraDemo /> },
         { path: "06MatrixStack", element: <MatrixStackDemo /> },
-        { path: "07Basics", element: <LightDiffuseDemo /> },
+        { path: "07Diffuse", element: <LightDiffuseDemo /> },
         { path: "08Specular", element: <LightSpecularDemo /> },
         { path: "09LightSource", element: <LightSourceDemo /> },
       ],

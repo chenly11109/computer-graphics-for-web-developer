@@ -4,10 +4,10 @@ import { InlineMath, BlockMath } from 'react-katex';
 
 export default function Transformation3D() {
     return (
-        <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-white shadow-md rounded-lg">
+        <section className="max-w-4xl pb-4 mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-white shadow-md rounded-lg">
             <h1 className="text-3xl font-semibold text-gray-900 my-4">Transformation 3D</h1>
             <Link className="text-blue-500 hover:text-blue-700 font-semibold underline" to="/webgpu/03transformation3D">
-                Check out the Demo
+                Demo
             </Link>
             <p className="text-gray-600 mt-2">Dive into the demo to explore 3D transformations within the WebGPU environment. Locate the corresponding code examples in the WebGPU folder and enhance your understanding of 3D graphics processing 😉.</p>
 

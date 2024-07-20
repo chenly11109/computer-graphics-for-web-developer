@@ -14,7 +14,7 @@ export const mat4 = {
 
     const fInRadians = getRadians(90 - fovy / 2);
     const f = Math.tan(fInRadians);
-    const rangeInv = 1 / (zFar-zNear);
+    const rangeInv = 1 / (zFar - zNear);
 
     dst[0] = f / aspect;
     dst[1] = 0;
@@ -28,7 +28,7 @@ export const mat4 = {
 
     dst[8] = 0;
     dst[9] = 0;
-    dst[10] =- (zFar + zNear) * rangeInv;
+    dst[10] = - (zFar + zNear) * rangeInv;
     dst[11] = -1;
 
     dst[12] = 0;
@@ -39,7 +39,7 @@ export const mat4 = {
     return dst;
   },
 
-  ortho(left:number, right:number, bottom:number, top:number, near:number, far:number, dst?: Float32Array) {
+  ortho(left: number, right: number, bottom: number, top: number, near: number, far: number, dst?: Float32Array) {
     dst = dst || new Float32Array(16);
 
     dst[0] = 2 / (right - left);
@@ -124,7 +124,7 @@ export const mat4 = {
   },
 
 
-  translation([tx, ty, tz]: number[]|Float32Array, dst?: Float32Array) {
+  translation([tx, ty, tz]: number[] | Float32Array, dst?: Float32Array) {
     dst = dst || new Float32Array(16);
     dst.set([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1]);
     return dst;
@@ -132,7 +132,7 @@ export const mat4 = {
 };
 
 export const vec3 = {
-  cross(a:Float32Array, b:Float32Array, dst?:Float32Array) {
+  cross(a: Float32Array, b: Float32Array, dst?: Float32Array) {
     dst = dst || new Float32Array(3);
 
     const t0 = a[1] * b[2] - a[2] * b[1];
@@ -146,7 +146,7 @@ export const vec3 = {
     return dst;
   },
 
-  subtract(a:number[], b:number[], dst?:Float32Array) {
+  subtract(a: number[], b: number[], dst?: Float32Array) {
     dst = dst || new Float32Array(3);
 
     dst[0] = a[0] - b[0];
@@ -156,7 +156,7 @@ export const vec3 = {
     return dst;
   },
 
-  normalize(v:number[]|Float32Array, dst?:Float32Array) {
+  normalize(v: number[] | Float32Array, dst?: Float32Array) {
     dst = dst || new Float32Array(3);
 
     const length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
@@ -176,38 +176,36 @@ export const vec3 = {
 };
 
 export const lookAt = (
-  eye:[eyeX:number, eyeY:number, eyeZ:number],
-  center: [centerX:number, centerY:number, centerZ:number], 
-  UP:[upX:number,upY:number,upZ:number], dst?:Float32Array)=>{
-    const F = vec3.subtract(eye, center);
-    const f = vec3.normalize(F);
-    const up = vec3.normalize(UP);
-    const s = vec3.normalize(vec3.cross(up, f));
-    const u = vec3.cross(f, s);
+  eye: [eyeX: number, eyeY: number, eyeZ: number],
+  center: [centerX: number, centerY: number, centerZ: number],
+  UP: [upX: number, upY: number, upZ: number], dst?: Float32Array) => {
+  const F = vec3.subtract(eye, center);
+  const f = vec3.normalize(F);
+  const up = vec3.normalize(UP);
+  const s = vec3.normalize(vec3.cross(up, f));
+  const u = vec3.cross(f, s);
 
-    dst = dst || new Float32Array(16);
-    dst[0] = s[0];
-    dst[1] = u[0];
-    dst[2] = f[0];
-    dst[3] = 0;
+  dst = dst || new Float32Array(16);
+  dst[0] = s[0];
+  dst[1] = u[0];
+  dst[2] = f[0];
+  dst[3] = 0;
 
-    dst[4] = s[1];
-    dst[5] = u[1];
-    dst[6] = f[1];
-    dst[7] = 0;
+  dst[4] = s[1];
+  dst[5] = u[1];
+  dst[6] = f[1];
+  dst[7] = 0;
 
-    dst[8] = s[2];
-    dst[9] = u[2];
-    dst[10] = f[2];
-    dst[11] = 0;
+  dst[8] = s[2];
+  dst[9] = u[2];
+  dst[10] = f[2];
+  dst[11] = 0;
 
-    dst[12] = 0;
-    dst[13] = 0;
-    dst[14] = 0;
-    dst[15] = 1;
+  dst[12] = 0;
+  dst[13] = 0;
+  dst[14] = 0;
+  dst[15] = 1;
 
-    // const translationMatrix = mat4.translation(vec3.subtract(eye,[0,0,0]));
-    // mat4.multiply(translationMatrix,dst,dst);
-    return dst;
+  return dst;
 
 }
