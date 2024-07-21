@@ -2,11 +2,11 @@ import 'katex/dist/katex.min.css';
 import { BlockMath, InlineMath } from 'react-katex';
 import { Link } from 'react-router-dom';
 
-function LightSourcesExplanation() {
+function LightSources() {
     return (
         <section className="max-w-4xl pb-4 mx-auto px-4 sm:px-6 lg:px-8 bg-white shadow-lg rounded-lg my-6">
             <h1 className="text-3xl font-semibold text-gray-900 my-4">Types of Light Sources in the context</h1>
-            <Link className="text-blue-500 hover:text-blue-700 my-4 font-semibold underline" to="/webgpu/07Diffuse">
+            <Link className="text-blue-500 hover:text-blue-700 my-4 font-semibold underline" to="/webgpu/09LightSource">
                 Demo
             </Link>
             <p className="text-gray-600 mt-2">In the previous two sections, we introduce two types of light that could inteact with the object based on a simutation formular (diffuse light and specular light).
@@ -64,4 +64,4 @@ function LightSourcesExplanation() {
     );
 }
 
-export default LightSourcesExplanation;
+export default LightSources;

@@ -10,7 +10,7 @@ export default function LightSourceDemo() {
   const [rotateY, setRotateX] = useState(0);
 
   const { lightX, lightY, lightZ, lightColor: lightColorHex, objectColor: objectColorHex, shininess, attenuation } = useControls({
-    light: folder({
+    PointLight: folder({
       lightX: {
         min: -500,
         max: 500,
@@ -30,13 +30,17 @@ export default function LightSourceDemo() {
         step: 5,
       },
       lightColor: { value: 'gold' },
+
+    }),
+    AmbientLight: folder({
       attenuation: {
         min: 100,
         max: 300,
         value: 200,
         step: 5
-      }
+      },
     }),
+
     object: folder({
       objectColor: { value: 'purple' },
       shininess: {
